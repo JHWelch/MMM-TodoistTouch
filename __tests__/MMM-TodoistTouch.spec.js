@@ -37,7 +37,7 @@ it('inits module in loading state', () => {
 describe('start', () => {
   const originalInterval = setInterval;
   const configObject = {
-
+    token: 'test-token',
   };
 
   beforeEach(() => {

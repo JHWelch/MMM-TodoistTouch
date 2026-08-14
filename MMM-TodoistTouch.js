@@ -29,7 +29,7 @@ Module.register('MMM-TodoistTouch', {
 
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', {
-      //
+      token: this.config.token,
     });
   },
 
