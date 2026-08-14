@@ -1,0 +1,7 @@
+{% if loading %}
+  <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
+{% else %}
+  <header class="space-between">
+    <span>{{ "TASKS" | translate }}</span>
+  </header>
+{% endif %}
