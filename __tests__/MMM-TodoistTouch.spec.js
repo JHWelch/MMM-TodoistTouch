@@ -90,6 +90,7 @@ describe('getTemplateData', () => {
   it('returns template data when loading', () => {
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: true,
+      tasks: [],
     });
   });
 
@@ -98,6 +99,17 @@ describe('getTemplateData', () => {
 
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: false,
+      tasks: [],
+    });
+  });
+
+  it('includes tasks in template data when they are available', () => {
+    MMMNotionTasks.loading = false;
+    MMMNotionTasks.data.tasks = [{ id: 1, content: 'Test task' }];
+
+    expect(MMMNotionTasks.getTemplateData()).toEqual({
+      loading: false,
+      tasks: [{ id: 1, content: 'Test task' }],
     });
   });
 });

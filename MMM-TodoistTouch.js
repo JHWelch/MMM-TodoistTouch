@@ -40,6 +40,7 @@ Module.register('MMM-TodoistTouch', {
   getTemplateData () {
     return {
       loading: this.loading,
+      tasks: this.data?.tasks || [],
     };
   },
 
