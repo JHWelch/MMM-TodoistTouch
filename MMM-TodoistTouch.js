@@ -57,13 +57,14 @@ Module.register('MMM-TodoistTouch', {
     };
   },
 
-  socketNotificationReceived (notification, _payload) {
+  socketNotificationReceived (notification, payload) {
     if (notification !== 'MMM-TodoistTouch-DATA') {
       return;
     }
 
     this.loading = false;
-    // Update data
+    this.data.tasks = payload.tasks;
+
     this.updateDom(300);
   },
 });

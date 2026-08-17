@@ -112,5 +112,19 @@ describe('getStyles', () => {
 });
 
 describe('socketNotificationReceived', () => {
-  //
+  it('ignores unexpected notifications', () => {
+    MMMNotionTasks.socketNotificationReceived('UNEXPECTED_NOTIFICATION', {});
+
+    expect(MMMNotionTasks.loading).toBe(true);
+    expect(MMMNotionTasks.data.tasks).toBeUndefined();
+  });
+
+  it('updates loading state and data on expected notification', () => {
+    const payload = { tasks: [{ id: 1, content: 'Test task' }] };
+
+    MMMNotionTasks.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
+
+    expect(MMMNotionTasks.loading).toBe(false);
+    expect(MMMNotionTasks.data.tasks).toEqual(payload.tasks);
+  });
 });
