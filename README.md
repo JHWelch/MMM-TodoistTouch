@@ -19,8 +19,9 @@ To use this module, add the following configuration block to the `modules` array
 ```js
 {
   module: 'MMM-TodoistTouch',
-  position: "bottom_left",
+  position: 'bottom_left',
   config: {
+    token: 'YOUR_TODOIST_API_TOKEN',
     // See below for optional configuration values
   }
 }
