@@ -17,7 +17,7 @@ module.exports = NodeHelper.create({
     this.getData(payload);
   },
 
-  async getData ({
+  async getData ({ // eslint-disable-line no-empty-pattern
     //
   }) {
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
