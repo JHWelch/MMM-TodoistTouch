@@ -27,6 +27,18 @@ To use this module, add the following configuration block to the `modules` array
 }
 ```
 
+### How to acquire a Todoist API token
+
+#### Use Account API Token (easiest)
+
+- The "API token" found in your account's [Integration > Developer settings](https://todoist.com/app/settings/integrations/developer)
+
+#### Add new App Integration 
+
+Create new integration in the [App Management Console](https://developer.todoist.com/appconsole.html). 
+
+Use either the "test token" provided there, or go through an Oauth flow to get a token for your own account. 
+
 ### Customizing Config
 
 | Option           | Required?    | Description                                                            |
