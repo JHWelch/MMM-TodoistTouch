@@ -28,9 +28,10 @@ To use this module, add the following configuration block to the `modules` array
 
 ### Customizing Config
 
-| Option           | Required?  | Description                                                            |
-| ---------------- | ---------- | ---------------------------------------------------------------------- |
-| `updateInterval` | *Optional* | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute) |
+| Option           | Required?    | Description                                                            |
+| ---------------- | ------------ | ---------------------------------------------------------------------- |
+| `token`          | **Required** | Your Todoist API token.                                                |
+| `updateInterval` | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute) |
 
 ## Update
 

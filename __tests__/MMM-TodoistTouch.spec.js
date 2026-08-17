@@ -37,7 +37,7 @@ it('inits module in loading state', () => {
 describe('start', () => {
   const originalInterval = setInterval;
   const configObject = {
-
+    token: 'test-token',
   };
 
   beforeEach(() => {
@@ -90,6 +90,7 @@ describe('getTemplateData', () => {
   it('returns template data when loading', () => {
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: true,
+      tasks: [],
     });
   });
 
@@ -98,6 +99,17 @@ describe('getTemplateData', () => {
 
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: false,
+      tasks: [],
+    });
+  });
+
+  it('includes tasks in template data when they are available', () => {
+    MMMNotionTasks.loading = false;
+    MMMNotionTasks.data.tasks = [{ id: 1, content: 'Test task' }];
+
+    expect(MMMNotionTasks.getTemplateData()).toEqual({
+      loading: false,
+      tasks: [{ id: 1, content: 'Test task' }],
     });
   });
 });
@@ -112,5 +124,19 @@ describe('getStyles', () => {
 });
 
 describe('socketNotificationReceived', () => {
-  //
+  it('ignores unexpected notifications', () => {
+    MMMNotionTasks.socketNotificationReceived('UNEXPECTED_NOTIFICATION', {});
+
+    expect(MMMNotionTasks.loading).toBe(true);
+    expect(MMMNotionTasks.data.tasks).toBeUndefined();
+  });
+
+  it('updates loading state and data on expected notification', () => {
+    const payload = { tasks: [{ id: 1, content: 'Test task' }] };
+
+    MMMNotionTasks.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
+
+    expect(MMMNotionTasks.loading).toBe(false);
+    expect(MMMNotionTasks.data.tasks).toEqual(payload.tasks);
+  });
 });
