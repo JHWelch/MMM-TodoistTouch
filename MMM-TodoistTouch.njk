@@ -4,4 +4,12 @@
   <header class="space-between">
     <span>{{ "TASKS" | translate }}</span>
   </header>
+
+  <ul class="list">
+    {% for task in tasks %}
+      <li class="list-item">
+        <span>{{ task.content }}</span>
+      </li>
+    {% endfor %}
+  </ul>
 {% endif %}
