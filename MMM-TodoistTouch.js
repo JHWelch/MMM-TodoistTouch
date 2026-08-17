@@ -57,7 +57,7 @@ Module.register('MMM-TodoistTouch', {
     };
   },
 
-  socketNotificationReceived (notification, payload) {
+  socketNotificationReceived (notification, _payload) {
     if (notification !== 'MMM-TodoistTouch-DATA') {
       return;
     }
