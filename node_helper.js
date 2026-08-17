@@ -6,6 +6,7 @@
  */
 
 // const Log = require('logger');
+const { TodoistApi } = require('@doist/todoist-sdk');
 const NodeHelper = require('node_helper');
 
 module.exports = NodeHelper.create({
@@ -17,11 +18,15 @@ module.exports = NodeHelper.create({
     this.getData(payload);
   },
 
-  async getData ({ // eslint-disable-line no-empty-pattern
-    //
+  async getData ({
+    token,
   }) {
+    const api = new TodoistApi(token);
+
+    const { results } = await api.getTasks();
+
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
-      //
+      tasks: results,
     });
   },
 });

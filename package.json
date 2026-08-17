@@ -34,5 +34,8 @@
     "globals": "^17.11.0",
     "jest": "^30.4.2",
     "nunjucks": "^3.2.4"
+  },
+  "dependencies": {
+    "@doist/todoist-sdk": "^14.0.0"
   }
 }
