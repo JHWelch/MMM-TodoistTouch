@@ -32,4 +32,12 @@ describe('loaded with tasks', () => {
     expect(template).toContain('Task 1');
     expect(template).toContain('Task 2');
   });
+
+  it('trim tasks over 20 characters', () => {
+    data.tasks.push({ content: 'This is a very long task that should be trimmed' });
+
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('This is a very long...');
+  });
 });
