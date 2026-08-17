@@ -31,7 +31,7 @@ To use this module, add the following configuration block to the `modules` array
 
 #### Use Account API Token (easiest)
 
-- The "API token" found in your account's [Integration > Developer settings](https://todoist.com/app/settings/integrations/developer)
+The "API token" found in your account's [Integration > Developer settings](https://todoist.com/app/settings/integrations/developer)
 
 #### Add new App Integration 
 
