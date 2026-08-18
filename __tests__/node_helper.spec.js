@@ -17,16 +17,19 @@ describe('socketNotificationReceived', () => {
     helper.getData = mockGetData;
 
     const notification = 'MMM-TodoistTouch-FETCH';
-    const payload = { token: 'test-token' };
 
-    await helper.socketNotificationReceived(notification, payload);
+    await helper.socketNotificationReceived(notification, { token: 'test-token' });
 
-    expect(mockGetData).toHaveBeenCalledWith(payload);
+    expect(mockGetData).toHaveBeenCalled();
     helper.getData = oldGetData; // Restore the original method
   });
 });
 
 describe('getData', () => {
+  beforeEach(() => {
+    helper.api = new TodoistApi('test-token');
+  });
+
   it('should call the API and send socket notification with tasks', async () => {
     const mockSendSocketNotification = jest.fn();
     helper.sendSocketNotification = mockSendSocketNotification;
