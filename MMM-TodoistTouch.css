@@ -1,1 +1,8 @@
 /** Styles */
+.close-button {
+  margin-left: 10px;
+}
+
+.task-list-item{
+  display: flex;
+}
