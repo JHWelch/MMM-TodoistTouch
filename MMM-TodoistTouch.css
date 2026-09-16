@@ -1,8 +1,79 @@
 /** Styles */
-.close-button {
+.MMM-TodoistTouch .close-button {
   margin-left: 10px;
 }
 
-.task-list-item{
+.MMM-TodoistTouch .list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.MMM-TodoistTouch .task-list-item{
   display: flex;
+  position: relative;
+}
+
+.MMM-TodoistTouch .task-main {
+  display: block;
+}
+
+.MMM-TodoistTouch .task-confirm {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #555;
+  background: #111;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.MMM-TodoistTouch .task-confirm-title {
+  margin: 0 0 8px 0;
+  color: #28e828;
+  font-size: 0.8em;
+  font-weight: normal;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.MMM-TodoistTouch .task-confirm-content {
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  font-size: 0.95em;
+  word-wrap: break-word;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.MMM-TodoistTouch .modal-button-wrapper {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.MMM-TodoistTouch .modal-button-confirm {
+  background: #228b22;
+  color: white;
+  padding: 6px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.85em;
+}
+
+.MMM-TodoistTouch .modal-button-cancel {
+  background: #444;
+  color: #eee;
+  padding: 6px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 0.85em;
 }
