@@ -10,8 +10,8 @@
 Module.register('MMM-TodoistTouch', {
   defaults: {
     updateInterval: 60000,
-    confirmText: "Task Complete?",
-    timeout: 10000 
+    confirmText: 'Task Complete?',
+    timeout: 10000,
   },
 
   requiresVersion: '2.28.0',
@@ -35,19 +35,19 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
-  // 1. Add this hook to bind touch events every time the template renders on screen
-  notificationReceived: function(notification, payload, sender) {
-    if (notification === "DOM_OBJECTS_CREATED") {
+  // 1. Bind touch events every time the template renders on screen
+  notificationReceived: function (notification, _payload, _sender) {
+    if (notification === 'DOM_OBJECTS_CREATED') {
       this.bindTouchEvents();
     }
   },
 
-   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
-  bindTouchEvents: function() {
-    const deleteBtn = document.querySelector(".delete-trigger-btn");
-    const overlay = document.getElementById("dc-overlay");
-    const cancelBtn = document.getElementById("dc-cancel-btn");
-    const confirmBtn = document.getElementById("dc-confirm-btn");
+  // 2. Custom routine to handle touch selection on Nunjucks rendered elements
+  bindTouchEvents: function () {
+    const deleteBtn = document.querySelector('.delete-trigger-btn');
+    const overlay = document.getElementById('dc-overlay');
+    const cancelBtn = document.getElementById('dc-cancel-btn');
+    const confirmBtn = document.getElementById('dc-confirm-btn');
 
     if (!deleteBtn || !overlay) return; // Guard clause if elements aren't rendered yet
 
@@ -57,9 +57,9 @@ Module.register('MMM-TodoistTouch', {
 
     const openOverlay = (e) => {
       if (e) e.preventDefault();
-      activeItemId = deleteBtn.getAttribute("data-item-id");
-      overlay.classList.remove("dc-hidden");
-      
+      activeItemId = deleteBtn.getAttribute('data-item-id');
+      overlay.classList.remove('dc-hidden');
+
       // Auto-dismiss safety window timer (10 seconds)
       clearTimeout(closeTimer);
       closeTimer = setTimeout(() => { closeOverlay(); }, 10000);
@@ -67,39 +67,39 @@ Module.register('MMM-TodoistTouch', {
 
     const closeOverlay = (e) => {
       if (e) e.preventDefault();
-      overlay.classList.add("dc-hidden");
+      overlay.classList.add('dc-hidden');
       clearTimeout(closeTimer);
     };
 
     // Trigger button actions
-    deleteBtn.addEventListener("touchend", openOverlay);
-    deleteBtn.addEventListener("click", openOverlay);
+    deleteBtn.addEventListener('touchend', openOverlay);
+    deleteBtn.addEventListener('click', openOverlay);
 
     // Overlay cancel buttons
-    cancelBtn.addEventListener("touchend", closeOverlay);
-    cancelBtn.addEventListener("click", closeOverlay);
+    cancelBtn.addEventListener('touchend', closeOverlay);
+    cancelBtn.addEventListener('click', closeOverlay);
 
     // Overlay confirm buttons
     const executeDelete = (e) => {
       if (e) e.preventDefault();
       // Dispatch payload cleanly to backend node_helper.js
-      this.sendSocketNotification("REQUEST_DELETE_DATA", { id: activeItemId });
+      this.sendSocketNotification('REQUEST_DELETE_DATA', { id: activeItemId });
       closeOverlay();
     };
-    confirmBtn.addEventListener("touchend", executeDelete);
-    confirmBtn.addEventListener("click", executeDelete);
+    confirmBtn.addEventListener('touchend', executeDelete);
+    confirmBtn.addEventListener('click', executeDelete);
   },
 
   getTemplate () {
     return 'MMM-TodoistTouch.njk';
   },
-  addTaskLevels(tasks) {
+  addTaskLevels (tasks) {
     // Normalize IDs to strings so 10 and "10" don't mismatch.
     const byId = new Map(tasks.map(task => [String(task.id), task]));
-    
+
     // This function exists only while addTaskLevels is running.
-    function getLevel(task, visiting = new Set()) {
-      if (task.parentId == null || task.parentId === "") {
+    function getLevel (task, visiting = new Set()) {
+      if (task.parentId == null || task.parentId === '') {
         return 0;
       }
 
@@ -115,6 +115,7 @@ Module.register('MMM-TodoistTouch', {
       // Choose a policy for an orphaned task.
       if (!parent) {
         console.warn(`Task ${id} has missing parent ${parentId}`);
+
         return 7;
       }
       visiting.add(id);
@@ -129,7 +130,7 @@ Module.register('MMM-TodoistTouch', {
     }
 
     return tasks;
-  
+
   },
 
   getTemplateData () {
@@ -161,8 +162,7 @@ Module.register('MMM-TodoistTouch', {
     this.loading = false;
     this.data.tasks = payload.tasks;
     this.addTaskLevels(this.data.tasks);
-    Log.log("Data removed: " + payload.id);
-
+    Log.log('Data removed: ' + payload.id);
 
     this.updateDom(300);
   },
