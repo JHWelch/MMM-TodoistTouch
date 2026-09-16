@@ -23,6 +23,8 @@ afterEach(() => {
 it('has a default config', () => {
   expect(MMMNotionTasks.defaults).toEqual({
     updateInterval: 60000,
+    confirmText: 'Task Complete?',
+    timeout: 10000,
   });
 });
 
