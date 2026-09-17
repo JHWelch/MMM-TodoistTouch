@@ -37,57 +37,49 @@ Module.register('MMM-TodoistTouch', {
 
   // 1. Bind touch events every time the template renders on screen
   notificationReceived: function (notification, _payload, _sender) {
-    if (notification === 'DOM_OBJECTS_CREATED') {
+    if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
     }
   },
 
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
-    const deleteBtn = document.querySelector('.delete-trigger-btn');
-    const overlay = document.getElementById('dc-overlay');
-    const cancelBtn = document.getElementById('dc-cancel-btn');
-    const confirmBtn = document.getElementById('dc-confirm-btn');
-
-    if (!deleteBtn || !overlay) return; // Guard clause if elements aren't rendered yet
-
-    // Current targeted item tracker storage
-    let activeItemId = null;
-    let closeTimer = null;
-
-    const openOverlay = (e) => {
-      if (e) e.preventDefault();
-      activeItemId = deleteBtn.getAttribute('data-item-id');
-      overlay.classList.remove('dc-hidden');
-
-      // Auto-dismiss safety window timer (10 seconds)
-      clearTimeout(closeTimer);
-      closeTimer = setTimeout(() => { closeOverlay(); }, 10000);
+    const closeButtons = document.querySelectorAll('.close-button');
+    const openModal = (e) => {
+      const li = e.currentTarget.closest('li');
+      const pop = li.querySelector('.task-confirm');
+      pop.style.display = 'block';
+      if(window.taskTimers) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
+      else window.taskTimers = {};
+      window.taskTimers[ '{{ task.id }}' ] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
     };
+    this.bindTouchEvent(closeButtons, openModal);
 
-    const closeOverlay = (e) => {
-      if (e) e.preventDefault();
-      overlay.classList.add('dc-hidden');
-      clearTimeout(closeTimer);
+    const modalConfirmButtons = document.querySelectorAll('.modal-button-confirm');
+    const confirmCloseTask = (e) => {
+      const li = e.currentTarget.closest('li');
+      if(window.taskTimers && window.taskTimers[ '{{ task.id }}' ]) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
+      li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+      li.querySelector('.task-confirm').style.display='none';
     };
+    this.bindTouchEvent(modalConfirmButtons, confirmCloseTask);
 
-    const executeDelete = (e) => {
-      if (e) e.preventDefault();
-      // Dispatch payload cleanly to backend node_helper.js
-      this.sendSocketNotification('REQUEST_DELETE_DATA', { id: activeItemId });
-      closeOverlay();
+    const modalCancelButtons = document.querySelectorAll('.modal-button-cancel');
+    const cancelCloseTask = (e) => {
+      const li = e.currentTarget.closest('li');
+      if(window.taskTimers && window.taskTimers[ '{{ task.id }}' ]) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
+      li.querySelector('.task-confirm').style.display='none';
     };
-
-    this.bindTouchEvent(deleteBtn, openOverlay);
-    this.bindTouchEvent(cancelBtn, closeOverlay);
-    this.bindTouchEvent(confirmBtn, executeDelete);
+    this.bindTouchEvent(modalCancelButtons, cancelCloseTask);
   },
 
-  bindTouchEvent (element, callback) {
-    if (!element) return;
+  bindTouchEvent (elements, callback) {
+    if (!elements || !elements.length) return;
 
-    element.addEventListener('touchend', callback);
-    element.addEventListener('click', callback);
+    elements.forEach((element) => {
+      element.addEventListener('touchend', callback);
+      element.addEventListener('click', callback);
+    });
   },
 
   getTemplate () {
