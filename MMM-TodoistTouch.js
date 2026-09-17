@@ -36,9 +36,14 @@ Module.register('MMM-TodoistTouch', {
   },
 
   // 1. Bind touch events every time the template renders on screen
-  notificationReceived: function (notification, _payload, _sender) {
+  notificationReceived: function (notification, payload, _sender) {
     if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
+    } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
+      this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
+        token: this.config.token,
+        content: payload.message,
+      });
     }
   },
 

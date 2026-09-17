@@ -98,6 +98,18 @@ describe('notificationReceived', () => {
 
     expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
   });
+
+  it('triggers a backend create if notification is KEYBOARD_INPUT with key TODOIST_ADD_TASK', () => {
+    const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+    MMMNotionTasks.sendSocketNotification = jest.fn();
+
+    MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+    expect(MMMNotionTasks.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+        token: MMMNotionTasks.config.token,
+        content: payload.message,
+      });
+  });
 });
 
 describe('bindTouchEvents', () => {
