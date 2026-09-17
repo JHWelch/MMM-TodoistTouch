@@ -1,4 +1,6 @@
 {
+  "CANCEL": "Cancel",
+  "CONFIRM": "Confirm",
 	"LOADING": "loading...",
   "TASKS": "Tasks"
 }
