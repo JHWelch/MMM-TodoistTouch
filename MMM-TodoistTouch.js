@@ -44,52 +44,51 @@ Module.register('MMM-TodoistTouch', {
 
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
-    const closeButtons = document.querySelectorAll('.close-button');
-    const openModal = (e) => {
-      const li = e.currentTarget.closest('li');
-      const taskId = li.getAttribute('data-task-id');
-      const pop = li.querySelector('.task-confirm');
-      pop.style.display = 'block';
-      if (window.taskTimers) {
-        clearTimeout(window.taskTimers[taskId]);
-      } else {
-        window.taskTimers = {};
-      }
-      window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
-    };
-    this.bindTouchEvent(closeButtons, openModal);
-
-    const modalConfirmButtons = document.querySelectorAll('.modal-button-confirm');
-    const confirmCloseTask = (e) => {
-      const li = e.currentTarget.closest('li');
-      const taskId = li.getAttribute('data-task-id');
-      if (window.taskTimers && window.taskTimers[ taskId ]) {
-        clearTimeout(window.taskTimers[taskId]);
-      }
-      li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
-      li.querySelector('.task-confirm').style.display='none';
-    };
-    this.bindTouchEvent(modalConfirmButtons, confirmCloseTask);
-
-    const modalCancelButtons = document.querySelectorAll('.modal-button-cancel');
-    const cancelCloseTask = (e) => {
-      const li = e.currentTarget.closest('li');
-      const taskId = li.getAttribute('data-task-id');
-      if (window.taskTimers && window.taskTimers[taskId]) {
-        clearTimeout(window.taskTimers[taskId]);
-      }
-      li.querySelector('.task-confirm').style.display='none';
-    };
-    this.bindTouchEvent(modalCancelButtons, cancelCloseTask);
+    this.bindTouchEvent('.close-button', this.openModal);
+    this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
+    this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
   },
 
-  bindTouchEvent (elements, callback) {
+  bindTouchEvent (className, callback) {
+    const elements = document.querySelectorAll(className);
     if (!elements || !elements.length) return;
 
     elements.forEach((element) => {
       element.addEventListener('touchend', callback);
       element.addEventListener('click', callback);
     });
+  },
+
+  openModal (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    const pop = li.querySelector('.task-confirm');
+    pop.style.display = 'block';
+    if (window.taskTimers) {
+      clearTimeout(window.taskTimers[taskId]);
+    } else {
+      window.taskTimers = {};
+    }
+    window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
+  },
+
+  confirmCloseTask (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    if (window.taskTimers && window.taskTimers[ taskId ]) {
+      clearTimeout(window.taskTimers[taskId]);
+    }
+    li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+    li.querySelector('.task-confirm').style.display='none';
+  },
+
+  cancelCloseTask  (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    if (window.taskTimers && window.taskTimers[taskId]) {
+      clearTimeout(window.taskTimers[taskId]);
+    }
+    li.querySelector('.task-confirm').style.display='none';
   },
 
   getTemplate () {
