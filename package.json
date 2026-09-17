@@ -30,13 +30,13 @@
   },
   "devDependencies": {
     "@jhwelch/mmm-eslint-config": "^4.0.0",
-    "eslint": "^10.8.1",
-    "globals": "^17.11.0",
-    "jest": "^30.4.2",
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
+    "jest": "^30.5.1",
     "jest-environment-jsdom": "^30.5.1",
     "nunjucks": "^3.2.4"
   },
   "dependencies": {
-    "@doist/todoist-sdk": "^14.0.0"
+    "@doist/todoist-sdk": "^15.3.0"
   }
 }
