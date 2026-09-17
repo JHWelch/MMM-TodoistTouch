@@ -11,6 +11,7 @@ beforeEach(() => {
   mockApi = {
     getTasks: jest.fn().mockResolvedValue({ results: [] }),
     closeTask: jest.fn().mockResolvedValue(),
+    addTask: jest.fn().mockResolvedValue(),
   };
   helper.api = jest.fn((_token) => mockApi);
 });
@@ -56,6 +57,24 @@ describe('socketNotificationReceived', () => {
       await helper.socketNotificationReceived(notification, payload);
 
       expect(mockApi.closeTask).toHaveBeenCalledWith(payload.taskId);
+      expect(mockGetData).toHaveBeenCalled();
+      helper.getData = oldGetData; // Restore the original method
+    });
+  });
+
+  describe('MMM-TodoistTouch-CREATE-TASK', () => {
+    it('should call addTask and then getData', async () => {
+      const mockGetData = jest.fn();
+      let oldGetData = helper.getData;
+      helper.getData = mockGetData;
+
+      const notification = 'MMM-TodoistTouch-CREATE-TASK';
+      const payload = { token: 'test-token', content: 'New Task' };
+
+      await helper.socketNotificationReceived(notification, payload);
+
+      expect(mockApi.addTask)
+        .toHaveBeenCalledWith({ content: payload.content });
       expect(mockGetData).toHaveBeenCalled();
       helper.getData = oldGetData; // Restore the original method
     });

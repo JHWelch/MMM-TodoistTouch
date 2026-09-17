@@ -19,6 +19,12 @@ module.exports = NodeHelper.create({
       api.closeTask(payload.taskId).then(() => {
         this.getData(api);
       });
+    } else if (notification === 'MMM-TodoistTouch-CREATE-TASK') {
+      const api = this.api(payload.token);
+
+      api.addTask({ content: payload.content }).then(() => {
+        this.getData(api);
+      });
     }
   },
 
