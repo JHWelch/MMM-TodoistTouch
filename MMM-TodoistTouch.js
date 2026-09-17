@@ -71,28 +71,29 @@ Module.register('MMM-TodoistTouch', {
       clearTimeout(closeTimer);
     };
 
-    // Trigger button actions
-    deleteBtn.addEventListener('touchend', openOverlay);
-    deleteBtn.addEventListener('click', openOverlay);
-
-    // Overlay cancel buttons
-    cancelBtn.addEventListener('touchend', closeOverlay);
-    cancelBtn.addEventListener('click', closeOverlay);
-
-    // Overlay confirm buttons
     const executeDelete = (e) => {
       if (e) e.preventDefault();
       // Dispatch payload cleanly to backend node_helper.js
       this.sendSocketNotification('REQUEST_DELETE_DATA', { id: activeItemId });
       closeOverlay();
     };
-    confirmBtn.addEventListener('touchend', executeDelete);
-    confirmBtn.addEventListener('click', executeDelete);
+
+    this.bindTouchEvent(deleteBtn, openOverlay);
+    this.bindTouchEvent(cancelBtn, closeOverlay);
+    this.bindTouchEvent(confirmBtn, executeDelete);
+  },
+
+  bindTouchEvent (element, callback) {
+    if (!element) return;
+
+    element.addEventListener('touchend', callback);
+    element.addEventListener('click', callback);
   },
 
   getTemplate () {
     return 'MMM-TodoistTouch.njk';
   },
+
   addTaskLevels (tasks) {
     // Normalize IDs to strings so 10 and "10" don't mismatch.
     const byId = new Map(tasks.map(task => [String(task.id), task]));
