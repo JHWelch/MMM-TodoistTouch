@@ -7,8 +7,7 @@
 
   <ul class="list">
     {% for task in tasks %}
-      <li class="task-list-item">
-
+      <li class="task-list-item" data-task-id="{{ task.id }}">
         <!-- MAIN TASK CONTAINER -->
         <div class="task-main">
           <form
@@ -17,13 +16,7 @@
             onsubmit="event.preventDefault(); const form = event.currentTarget; fetch(form.action, { method: form.method, headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, body: new URLSearchParams(new FormData(form)).toString(), }).catch((error) => console.error('Failed to close task', error)); return false;"
           >
             <!-- ONCLICK: Shows pop-up and initializes a strict 15-second auto-cancel window -->
-            <button class="close-button" type="button"
-                    onclick="const li = this.closest('li');
-                             const pop = li.querySelector('.task-confirm');
-                             pop.style.display = 'block';
-                             if(window.taskTimers) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
-                             else window.taskTimers = {};
-                             window.taskTimers[ '{{ task.id }}' ] = setTimeout(() => { pop.style.display = 'none'; }, 15000);">
+            <button class="close-button" type="button">
               <span>
                 {# <span class="fa fa-square-check"></span>  #}
                 {% for i in range(0, task.level) %}
@@ -42,26 +35,16 @@
 
           <div class="modal-button-wrapper">
             <!-- CONFIRM BUTTON: Fires submit and clears the active safety timer -->
-            <button type="button"
-                    class="button modal-button-confirm"
-                    onclick="const li = this.closest('li');
-                             if(window.taskTimers && window.taskTimers[ '{{ task.id }}' ]) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
-                             li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
-                             li.querySelector('.task-confirm').style.display='none';">
+            <button type="button" class="button modal-button-confirm">
               Confirm
             </button>
 
             <!-- CANCEL BUTTON: Closes pop-up immediately and clears the safety timer -->
-            <button type="button"
-                    class="button modal-button-cancel"
-                    onclick="const li = this.closest('li');
-                             if(window.taskTimers && window.taskTimers[ '{{ task.id }}' ]) clearTimeout(window.taskTimers[ '{{ task.id }}' ]);
-                             li.querySelector('.task-confirm').style.display='none';">
+            <button type="button" class="button modal-button-cancel">
               Cancel
             </button>
           </div>
         </div>
-
       </li>
     {% endfor %}
   </ul>

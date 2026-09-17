@@ -37,62 +37,64 @@ Module.register('MMM-TodoistTouch', {
 
   // 1. Bind touch events every time the template renders on screen
   notificationReceived: function (notification, _payload, _sender) {
-    if (notification === 'DOM_OBJECTS_CREATED') {
+    if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
     }
   },
 
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
-    const deleteBtn = document.querySelector('.delete-trigger-btn');
-    const overlay = document.getElementById('dc-overlay');
-    const cancelBtn = document.getElementById('dc-cancel-btn');
-    const confirmBtn = document.getElementById('dc-confirm-btn');
+    this.bindTouchEvent('.close-button', this.openModal);
+    this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
+    this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
+  },
 
-    if (!deleteBtn || !overlay) return; // Guard clause if elements aren't rendered yet
+  bindTouchEvent (className, callback) {
+    const elements = document.querySelectorAll(className);
+    if (!elements || !elements.length) return;
 
-    // Current targeted item tracker storage
-    let activeItemId = null;
-    let closeTimer = null;
+    elements.forEach((element) => {
+      element.addEventListener('touchend', callback);
+      element.addEventListener('click', callback);
+    });
+  },
 
-    const openOverlay = (e) => {
-      if (e) e.preventDefault();
-      activeItemId = deleteBtn.getAttribute('data-item-id');
-      overlay.classList.remove('dc-hidden');
+  openModal (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    const pop = li.querySelector('.task-confirm');
+    pop.style.display = 'block';
+    if (window.taskTimers) {
+      clearTimeout(window.taskTimers[taskId]);
+    } else {
+      window.taskTimers = {};
+    }
+    window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
+  },
 
-      // Auto-dismiss safety window timer (10 seconds)
-      clearTimeout(closeTimer);
-      closeTimer = setTimeout(() => { closeOverlay(); }, 10000);
-    };
+  confirmCloseTask (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    if (window.taskTimers && window.taskTimers[ taskId ]) {
+      clearTimeout(window.taskTimers[taskId]);
+    }
+    li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+    li.querySelector('.task-confirm').style.display='none';
+  },
 
-    const closeOverlay = (e) => {
-      if (e) e.preventDefault();
-      overlay.classList.add('dc-hidden');
-      clearTimeout(closeTimer);
-    };
-
-    // Trigger button actions
-    deleteBtn.addEventListener('touchend', openOverlay);
-    deleteBtn.addEventListener('click', openOverlay);
-
-    // Overlay cancel buttons
-    cancelBtn.addEventListener('touchend', closeOverlay);
-    cancelBtn.addEventListener('click', closeOverlay);
-
-    // Overlay confirm buttons
-    const executeDelete = (e) => {
-      if (e) e.preventDefault();
-      // Dispatch payload cleanly to backend node_helper.js
-      this.sendSocketNotification('REQUEST_DELETE_DATA', { id: activeItemId });
-      closeOverlay();
-    };
-    confirmBtn.addEventListener('touchend', executeDelete);
-    confirmBtn.addEventListener('click', executeDelete);
+  cancelCloseTask  (e) {
+    const li = e.currentTarget.closest('li');
+    const taskId = li.getAttribute('data-task-id');
+    if (window.taskTimers && window.taskTimers[taskId]) {
+      clearTimeout(window.taskTimers[taskId]);
+    }
+    li.querySelector('.task-confirm').style.display='none';
   },
 
   getTemplate () {
     return 'MMM-TodoistTouch.njk';
   },
+
   addTaskLevels (tasks) {
     // Normalize IDs to strings so 10 and "10" don't mismatch.
     const byId = new Map(tasks.map(task => [String(task.id), task]));
