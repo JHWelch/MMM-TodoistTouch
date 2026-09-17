@@ -7,8 +7,7 @@
 
   <ul class="list">
     {% for task in tasks %}
-      <li class="task-list-item">
-
+      <li class="task-list-item" data-task-id="{{ task.id }}">
         <!-- MAIN TASK CONTAINER -->
         <div class="task-main">
           <form
@@ -46,7 +45,6 @@
             </button>
           </div>
         </div>
-
       </li>
     {% endfor %}
   </ul>
