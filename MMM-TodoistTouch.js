@@ -50,8 +50,11 @@ Module.register('MMM-TodoistTouch', {
       const taskId = li.getAttribute('data-task-id');
       const pop = li.querySelector('.task-confirm');
       pop.style.display = 'block';
-      if(window.taskTimers) clearTimeout(window.taskTimers[taskId]);
-      else window.taskTimers = {};
+      if (window.taskTimers) {
+        clearTimeout(window.taskTimers[taskId]);
+      } else {
+        window.taskTimers = {};
+      }
       window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
     };
     this.bindTouchEvent(closeButtons, openModal);
