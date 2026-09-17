@@ -52,6 +52,7 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.close-button', this.openModal);
     this.bindTouchEvent('.modal-button-confirm', (e) => this.confirmCloseTask(e, this));
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
+    this.bindTouchEvent('.add-button', () => this.openKeyboardForAdd(this));
   },
 
   bindTouchEvent (className, callback) {
@@ -94,6 +95,14 @@ Module.register('MMM-TodoistTouch', {
       clearTimeout(window.taskTimers[taskId]);
     }
     li.querySelector('.task-confirm').style.display='none';
+  },
+
+  openKeyboardForAdd (self) {
+    self.sendNotification('KEYBOARD', {
+      key: 'TODOIST_ADD_TASK',
+      style: 'default',
+      data: {},
+    });
   },
 
   getTemplate () {

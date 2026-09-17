@@ -149,6 +149,17 @@ describe('bindTouchEvents', () => {
     expect(MMMNotionTasks.cancelCloseTask).toHaveBeenCalled();
   });
 
+  it('binds touch events for add button', () => {
+    const mockAddButton = document.createElement('button');
+    mockAddButton.className = 'add-button';
+    document.body.appendChild(mockAddButton);
+    MMMNotionTasks.openKeyboardForAdd = jest.fn();
+
+    MMMNotionTasks.bindTouchEvents();
+
+    mockAddButton.dispatchEvent(new Event('click'));
+    expect(MMMNotionTasks.openKeyboardForAdd).toHaveBeenCalled();
+  });
 });
 
 describe('bindTouchEvent', () => {
@@ -192,6 +203,20 @@ describe('confirmCloseTask', () => {
     expect(taskConfirm.style.display).toBe('none');
 
     document.body.removeChild(li);
+  });
+});
+
+describe('openKeyboardForAdd', () => {
+  it('sends keyboard notification', () => {
+    MMMNotionTasks.sendNotification = jest.fn();
+
+    MMMNotionTasks.openKeyboardForAdd(MMMNotionTasks);
+
+    expect(MMMNotionTasks.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
+      key: 'TODOIST_ADD_TASK',
+      style: 'default',
+      data: {},
+    });
   });
 });
 
