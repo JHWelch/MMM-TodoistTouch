@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 require('../__mocks__/Module');
 require('../__mocks__/globalLogger');
 
@@ -79,6 +81,79 @@ describe('start', () => {
 
     expect(global.setInterval)
       .toHaveBeenCalledWith(expect.any(Function), 100000);
+  });
+});
+
+describe('notificationReceived', () => {
+  it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
+    MMMNotionTasks.bindTouchEvents = jest.fn();
+    MMMNotionTasks.notificationReceived('SOME_OTHER_NOTIFICATION');
+
+    expect(MMMNotionTasks.bindTouchEvents).not.toHaveBeenCalled();
+  });
+
+  it('binds touch events if notification is MODULE_DOM_UPDATED', () => {
+    MMMNotionTasks.bindTouchEvents = jest.fn();
+    MMMNotionTasks.notificationReceived('MODULE_DOM_UPDATED');
+
+    expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
+  });
+});
+
+describe('bindTouchEvents', () => {
+  it('binds touch events for close button', () => {
+    const mockCloseButton = document.createElement('button');
+    mockCloseButton.className = 'close-button';
+    document.body.appendChild(mockCloseButton);
+    MMMNotionTasks.openModal = jest.fn();
+
+    MMMNotionTasks.bindTouchEvents();
+
+    mockCloseButton.dispatchEvent(new Event('touchend'));
+    expect(MMMNotionTasks.openModal).toHaveBeenCalled();
+  });
+
+  it('binds touch events for modal confirm button', () => {
+    const mockConfirmButton = document.createElement('button');
+    mockConfirmButton.className = 'modal-button-confirm';
+    document.body.appendChild(mockConfirmButton);
+    MMMNotionTasks.confirmCloseTask = jest.fn();
+
+    MMMNotionTasks.bindTouchEvents();
+
+    mockConfirmButton.dispatchEvent(new Event('click'));
+    expect(MMMNotionTasks.confirmCloseTask).toHaveBeenCalled();
+  });
+
+  it('binds touch events for modal cancel button', () => {
+    const mockCancelButton = document.createElement('button');
+    mockCancelButton.className = 'modal-button-cancel';
+    document.body.appendChild(mockCancelButton);
+    MMMNotionTasks.cancelCloseTask = jest.fn();
+
+    MMMNotionTasks.bindTouchEvents();
+
+    mockCancelButton.dispatchEvent(new Event('touchend'));
+    expect(MMMNotionTasks.cancelCloseTask).toHaveBeenCalled();
+  });
+
+});
+
+describe('bindTouchEvent', () => {
+  it('binds touchend and click events to elements with the given class', () => {
+    const mockElement = document.createElement('div');
+    mockElement.className = 'test-class';
+    document.body.appendChild(mockElement);
+
+    const callback = jest.fn();
+    MMMNotionTasks.bindTouchEvent('.test-class', callback);
+
+    mockElement.dispatchEvent(new Event('touchend'));
+    mockElement.dispatchEvent(new Event('click'));
+
+    expect(callback).toHaveBeenCalledTimes(2);
+
+    document.body.removeChild(mockElement);
   });
 });
 
