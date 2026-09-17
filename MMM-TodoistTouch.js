@@ -45,7 +45,7 @@ Module.register('MMM-TodoistTouch', {
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
     this.bindTouchEvent('.close-button', this.openModal);
-    this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
+    this.bindTouchEvent('.modal-button-confirm', (e) => this.confirmCloseTask(e, this));
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
   },
 
@@ -72,14 +72,14 @@ Module.register('MMM-TodoistTouch', {
     window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
   },
 
-  confirmCloseTask (e) {
+  confirmCloseTask (e, self) {
     const li = e.currentTarget.closest('li');
     const taskId = li.getAttribute('data-task-id');
-    if (window.taskTimers && window.taskTimers[ taskId ]) {
-      clearTimeout(window.taskTimers[taskId]);
-    }
-    li.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
-    li.querySelector('.task-confirm').style.display='none';
+    this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
+      token: self.config.token,
+      taskId: taskId,
+    });
+    self.cancelCloseTask(e);
   },
 
   cancelCloseTask  (e) {

@@ -10,33 +10,24 @@ const { TodoistApi } = require('@doist/todoist-sdk');
 const NodeHelper = require('node_helper');
 
 module.exports = NodeHelper.create({
-  api: undefined,
-
-  start () {
-    this.expressApp.post('/task/:taskId/close', async (req, res) => {
-      if (!this.api) {
-        return;
-      }
-
-      await this.api.closeTask(req.params.taskId);
-
-      res.status(200).send('OK');
-
-      await this.getData();
-    });
-  },
-
   socketNotificationReceived (notification, payload) {
-    if (notification !== 'MMM-TodoistTouch-FETCH') {
-      return;
-    }
-    this.api = new TodoistApi(payload.token);
+    if (notification === 'MMM-TodoistTouch-FETCH') {
+      this.getData(this.api(payload.token));
+    } else if (notification === 'MMM-TodoistTouch-CLOSE-TASK') {
+      const api = this.api(payload.token);
 
-    this.getData();
+      api.closeTask(payload.taskId).then(() => {
+        this.getData(api);
+      });
+    }
   },
 
-  async getData () {
-    const { results } = await this.api.getTasks();
+  api (token) {
+    return new TodoistApi(token);
+  },
+
+  async getData (api) {
+    const { results } = await api.getTasks();
 
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
       tasks: results,
