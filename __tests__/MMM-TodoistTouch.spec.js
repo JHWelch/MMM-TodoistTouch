@@ -157,6 +157,32 @@ describe('bindTouchEvent', () => {
   });
 });
 
+describe('confirmCloseTask', () => {
+  it('dispatches close task event to node_helper and hides the confirm modal', () => {
+    const taskConfirm = document.createElement('div');
+    taskConfirm.className = 'task-confirm';
+    const triggerButton = document.createElement('button');
+    const li = document.createElement('li');
+    li.setAttribute('data-task-id', '123');
+    li.appendChild(taskConfirm);
+    li.appendChild(triggerButton);
+    document.body.appendChild(li);
+    const mockEvent = { currentTarget: triggerButton };
+    MMMNotionTasks.sendSocketNotification = jest.fn();
+
+    MMMNotionTasks.confirmCloseTask(mockEvent, MMMNotionTasks);
+
+    expect(MMMNotionTasks.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-CLOSE-TASK', {
+        token: MMMNotionTasks.config.token,
+        taskId: '123',
+      });
+    expect(taskConfirm.style.display).toBe('none');
+
+    document.body.removeChild(li);
+  });
+});
+
 describe('getTemplate', () => {
   it('returns template path', () => {
     expect(MMMNotionTasks.getTemplate()).toBe('MMM-TodoistTouch.njk');

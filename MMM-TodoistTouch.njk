@@ -10,22 +10,16 @@
       <li class="task-list-item" data-task-id="{{ task.id }}">
         <!-- MAIN TASK CONTAINER -->
         <div class="task-main">
-          <form
-            action="/task/{{ task.id }}/close"
-            method="POST"
-            onsubmit="event.preventDefault(); const form = event.currentTarget; fetch(form.action, { method: form.method, headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }, body: new URLSearchParams(new FormData(form)).toString(), }).catch((error) => console.error('Failed to close task', error)); return false;"
-          >
-            <!-- ONCLICK: Shows pop-up and initializes a strict 15-second auto-cancel window -->
-            <button class="close-button" type="button">
-              <span>
-                {# <span class="fa fa-square-check"></span>  #}
-                {% for i in range(0, task.level) %}
-                  <span> _ </span>
-                {% endfor %}
-                <span>{{ task.content | truncate(40) }}</span>
-              </span>
-            </button>
-          </form>
+          <!-- ONCLICK: Shows pop-up and initializes a strict 15-second auto-cancel window -->
+          <button class="close-button" type="button">
+            <span>
+              {# <span class="fa fa-square-check"></span>  #}
+              {% for i in range(0, task.level) %}
+                <span> _ </span>
+              {% endfor %}
+              <span>{{ task.content | truncate(40) }}</span>
+            </span>
+          </button>
         </div>
 
         <!-- REPLACEMENT CONFIRMATION CONTAINER -->
