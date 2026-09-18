@@ -19,29 +19,32 @@ module.exports = NodeHelper.create({
   },
 
   fetchData (payload) {
-    this.getData(this.api(payload.token));
+    this.getData(this.context(payload));
   },
 
   closeTask (payload) {
-    const api = this.api(payload.token);
+    const context = this.context(payload);
 
-    api.closeTask(payload.taskId)
-      .then(() => this.getData(api));
+    context.api.closeTask(payload.taskId)
+      .then(() => this.getData(context));
   },
 
   createTask (payload) {
-    const api = this.api(payload.token);
+    const context = this.context(payload);
 
-    api.addTask({ content: payload.content })
-      .then(() => this.getData(api));
+    context.api.addTask({ content: payload.content })
+      .then(() => this.getData(context));
   },
 
-  api (token) {
-    return new TodoistApi(token);
+  context (payload) {
+    return {
+      api: new TodoistApi(payload.token),
+      filter: payload.filter,
+    };
   },
 
-  async getData (api) {
-    const { results } = await api.getTasks();
+  async getData (context) {
+    const { results } = await context.api.getTasks();
 
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
       tasks: results,
