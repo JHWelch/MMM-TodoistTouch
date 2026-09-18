@@ -48,9 +48,9 @@ Module.register('MMM-TodoistTouch', {
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
     this.bindTouchEvent('.close-button', this.openModal);
-    this.bindTouchEvent('.modal-button-confirm', (e) => this.confirmCloseTask(e, this));
+    this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
-    this.bindTouchEvent('.add-button', () => this.openKeyboardForAdd(this));
+    this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
   },
 
   openModal (e) {
@@ -66,13 +66,13 @@ Module.register('MMM-TodoistTouch', {
     window.taskTimers[taskId] = setTimeout(() => { pop.style.display = 'none'; }, 15000);
   },
 
-  confirmCloseTask (e, self) {
-    const { taskId } = self.taskDetails(e);
+  confirmCloseTask (e) {
+    const { taskId } = this.taskDetails(e);
     this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
-      token: self.config.token,
+      token: this.config.token,
       taskId: taskId,
     });
-    self.cancelCloseTask(e);
+    this.cancelCloseTask(e);
   },
 
   cancelCloseTask  (e) {
@@ -83,8 +83,8 @@ Module.register('MMM-TodoistTouch', {
     element.querySelector('.task-confirm').style.display='none';
   },
 
-  openKeyboardForAdd (self) {
-    self.sendNotification('KEYBOARD', {
+  openKeyboardForAdd () {
+    this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       data: {},
@@ -175,6 +175,8 @@ Module.register('MMM-TodoistTouch', {
   bindTouchEvent (className, callback) {
     const elements = document.querySelectorAll(className);
     if (!elements || !elements.length) return;
+
+    callback = callback.bind(this);
 
     elements.forEach((element) => {
       element.addEventListener('touchend', callback);
