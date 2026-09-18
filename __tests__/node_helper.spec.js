@@ -3,6 +3,7 @@ let helper;
 jest.mock('@doist/todoist-sdk');
 
 let mockApi;
+let oldGetData;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -14,12 +15,16 @@ beforeEach(() => {
     addTask: jest.fn().mockResolvedValue(),
   };
   helper.api = jest.fn((_token) => mockApi);
+  oldGetData = helper.getData;
+});
+
+afterEach(() => {
+  helper.getData = oldGetData; // Restore the original method
 });
 
 describe('socketNotificationReceived', () => {
   it('should ignore all other notifications', async () => {
     const mockGetData = jest.fn();
-    let oldGetData = helper.getData;
     helper.getData = mockGetData;
 
     const notification = 'OTHER-NOTIFICATION';
@@ -27,13 +32,11 @@ describe('socketNotificationReceived', () => {
     await helper.socketNotificationReceived(notification, { token: 'test-token' });
 
     expect(mockGetData).not.toHaveBeenCalled();
-    helper.getData = oldGetData; // Restore the original method
   });
 
   describe('MMM-TodoistTouch-FETCH', () => {
     it('should call getData ', async () => {
       const mockGetData = jest.fn();
-      let oldGetData = helper.getData;
       helper.getData = mockGetData;
 
       const notification = 'MMM-TodoistTouch-FETCH';
@@ -41,14 +44,12 @@ describe('socketNotificationReceived', () => {
       await helper.socketNotificationReceived(notification, { token: 'test-token' });
 
       expect(mockGetData).toHaveBeenCalled();
-      helper.getData = oldGetData; // Restore the original method
     });
   });
 
   describe('MMM-TodoistTouch-CLOSE-TASK', () => {
     it('should call closeTask and then getData', async () => {
       const mockGetData = jest.fn();
-      let oldGetData = helper.getData;
       helper.getData = mockGetData;
 
       const notification = 'MMM-TodoistTouch-CLOSE-TASK';
@@ -58,14 +59,12 @@ describe('socketNotificationReceived', () => {
 
       expect(mockApi.closeTask).toHaveBeenCalledWith(payload.taskId);
       expect(mockGetData).toHaveBeenCalled();
-      helper.getData = oldGetData; // Restore the original method
     });
   });
 
   describe('MMM-TodoistTouch-CREATE-TASK', () => {
     it('should call addTask and then getData', async () => {
       const mockGetData = jest.fn();
-      let oldGetData = helper.getData;
       helper.getData = mockGetData;
 
       const notification = 'MMM-TodoistTouch-CREATE-TASK';
@@ -76,7 +75,6 @@ describe('socketNotificationReceived', () => {
       expect(mockApi.addTask)
         .toHaveBeenCalledWith({ content: payload.content });
       expect(mockGetData).toHaveBeenCalled();
-      helper.getData = oldGetData; // Restore the original method
     });
   });
 });
