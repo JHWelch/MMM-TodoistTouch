@@ -10,8 +10,6 @@
 Module.register('MMM-TodoistTouch', {
   defaults: {
     updateInterval: 60000,
-    confirmText: 'Task Complete?',
-    timeout: 10000,
   },
 
   requiresVersion: '2.28.0',
