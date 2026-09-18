@@ -27,9 +27,16 @@ Module.register('MMM-TodoistTouch', {
     }, this.config.updateInterval);
   },
 
+  todoistConfig () {
+    return {
+      token: this.config.token,
+      filter: this.config.filter,
+    };
+  },
+
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', {
-      token: this.config.token,
+      ...this.todoistConfig(),
       filter: this.config.filter,
     });
   },
@@ -40,7 +47,7 @@ Module.register('MMM-TodoistTouch', {
       this.bindTouchEvents();
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
-        token: this.config.token,
+        ...this.todoistConfig(),
         content: payload.message,
       });
     }
@@ -70,7 +77,7 @@ Module.register('MMM-TodoistTouch', {
   confirmCloseTask (e) {
     const { taskId } = this.taskDetails(e);
     this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
-      token: this.config.token,
+      ...this.todoistConfig(),
       taskId: taskId,
     });
     this.cancelCloseTask(e);
