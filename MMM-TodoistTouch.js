@@ -14,7 +14,7 @@ Module.register('MMM-TodoistTouch', {
     timeout: 10000,
   },
 
-  requiresVersion: "2.28.0",
+  requiresVersion: '2.28.0',
 
   loading: true,
 
