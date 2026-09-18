@@ -11,6 +11,7 @@ beforeEach(() => {
   helper.setName('MMM-TodoistTouch');
   mockApi = {
     getTasks: jest.fn().mockResolvedValue({ results: [] }),
+    getTasksByFilter: jest.fn().mockResolvedValue({ results: [] }),
     closeTask: jest.fn().mockResolvedValue(),
     addTask: jest.fn().mockResolvedValue(),
   };
@@ -96,5 +97,22 @@ describe('getData', () => {
     expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
       tasks: mockTasks,
     });
+  });
+
+  it('should call filter endpoint if filter is provided', async () => {
+    const mockSendSocketNotification = jest.fn();
+    helper.sendSocketNotification = mockSendSocketNotification;
+
+    const mockTasks = [{ id: 1, content: 'Task 1' }];
+    mockApi.getTasksByFilter.mockResolvedValue({ results: mockTasks });
+
+    await helper.getData({api: mockApi, filter: 'test-filter' });
+
+    expect(mockApi.getTasksByFilter)
+      .toHaveBeenCalledWith({filter: 'test-filter'});
+    expect(mockSendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
+        tasks: mockTasks,
+      });
   });
 });
