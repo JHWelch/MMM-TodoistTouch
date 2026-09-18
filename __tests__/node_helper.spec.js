@@ -14,7 +14,10 @@ beforeEach(() => {
     closeTask: jest.fn().mockResolvedValue(),
     addTask: jest.fn().mockResolvedValue(),
   };
-  helper.api = jest.fn((_token) => mockApi);
+  helper.context = jest.fn((payload) => ({
+    api: mockApi,
+    filter: payload.filter,
+  }));
   oldGetData = helper.getData;
 });
 
@@ -87,7 +90,7 @@ describe('getData', () => {
     const mockTasks = [{ id: 1, content: 'Task 1' }, { id: 2, content: 'Task 2' }];
     mockApi.getTasks.mockResolvedValue({ results: mockTasks });
 
-    await helper.getData(mockApi);
+    await helper.getData({api: mockApi});
 
     expect(mockApi.getTasks).toHaveBeenCalled();
     expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
