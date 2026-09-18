@@ -25,17 +25,15 @@ module.exports = NodeHelper.create({
   closeTask (payload) {
     const api = this.api(payload.token);
 
-    api.closeTask(payload.taskId).then(() => {
-      this.getData(api);
-    });
+    api.closeTask(payload.taskId)
+      .then(() => this.getData(api));
   },
 
   createTask (payload) {
     const api = this.api(payload.token);
 
-    api.addTask({ content: payload.content }).then(() => {
-      this.getData(api);
-    });
+    api.addTask({ content: payload.content })
+      .then(() => this.getData(api));
   },
 
   api (token) {
