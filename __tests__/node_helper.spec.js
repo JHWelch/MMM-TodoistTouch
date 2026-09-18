@@ -109,7 +109,7 @@ describe('getData', () => {
     await helper.getData({api: mockApi, filter: 'test-filter' });
 
     expect(mockApi.getTasksByFilter)
-      .toHaveBeenCalledWith({filter: 'test-filter'});
+      .toHaveBeenCalledWith({query: 'test-filter'});
     expect(mockSendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
         tasks: mockTasks,
