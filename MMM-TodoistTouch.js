@@ -65,11 +65,20 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
-  openModal (e) {
+  taskDetails (e) {
     const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
-    const pop = li.querySelector('.task-confirm');
+
+    return {
+      element: li,
+      taskId: li.getAttribute('data-task-id'),
+    };
+  },
+
+  openModal (e) {
+    const { element, taskId } = this.taskDetails(e);
+    const pop = element.querySelector('.task-confirm');
     pop.style.display = 'block';
+
     if (window.taskTimers) {
       clearTimeout(window.taskTimers[taskId]);
     } else {
@@ -79,8 +88,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   confirmCloseTask (e, self) {
-    const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
+    const { taskId } = self.taskDetails(e);
     this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
       token: self.config.token,
       taskId: taskId,
@@ -89,12 +97,11 @@ Module.register('MMM-TodoistTouch', {
   },
 
   cancelCloseTask  (e) {
-    const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
+    const { element, taskId } = this.taskDetails(e);
     if (window.taskTimers && window.taskTimers[taskId]) {
       clearTimeout(window.taskTimers[taskId]);
     }
-    li.querySelector('.task-confirm').style.display='none';
+    element.querySelector('.task-confirm').style.display='none';
   },
 
   openKeyboardForAdd (self) {
