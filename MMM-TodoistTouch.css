@@ -1,6 +1,24 @@
 /** Styles */
+.MMM-TodoistTouch .space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.MMM-TodoistTouch .add-button {
+  background: none;
+  border: 1px solid var(--color-text);
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
 .MMM-TodoistTouch .close-button {
-  margin-left: 10px;
+  background: none;
+  border: none;
+  color: var(--color-text-bright);
+  cursor: pointer;
 }
 
 .MMM-TodoistTouch .list {
