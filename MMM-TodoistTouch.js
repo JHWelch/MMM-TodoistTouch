@@ -55,25 +55,6 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.add-button', () => this.openKeyboardForAdd(this));
   },
 
-  bindTouchEvent (className, callback) {
-    const elements = document.querySelectorAll(className);
-    if (!elements || !elements.length) return;
-
-    elements.forEach((element) => {
-      element.addEventListener('touchend', callback);
-      element.addEventListener('click', callback);
-    });
-  },
-
-  taskDetails (e) {
-    const li = e.currentTarget.closest('li');
-
-    return {
-      element: li,
-      taskId: li.getAttribute('data-task-id'),
-    };
-  },
-
   openModal (e) {
     const { element, taskId } = this.taskDetails(e);
     const pop = element.querySelector('.task-confirm');
@@ -188,5 +169,28 @@ Module.register('MMM-TodoistTouch', {
     Log.log('Data removed: ' + payload.id);
 
     this.updateDom(300);
+  },
+
+  ////////////////////////
+  // Helpers
+  ////////////////////////
+
+  bindTouchEvent (className, callback) {
+    const elements = document.querySelectorAll(className);
+    if (!elements || !elements.length) return;
+
+    elements.forEach((element) => {
+      element.addEventListener('touchend', callback);
+      element.addEventListener('click', callback);
+    });
+  },
+
+  taskDetails (e) {
+    const li = e.currentTarget.closest('li');
+
+    return {
+      element: li,
+      taskId: li.getAttribute('data-task-id'),
+    };
   },
 });
