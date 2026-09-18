@@ -96,6 +96,18 @@ describe('notificationReceived', () => {
 
     expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
   });
+
+  it('triggers a backend create if notification is KEYBOARD_INPUT with key TODOIST_ADD_TASK', () => {
+    const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+    MMMNotionTasks.sendSocketNotification = jest.fn();
+
+    MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+    expect(MMMNotionTasks.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+        token: MMMNotionTasks.config.token,
+        content: payload.message,
+      });
+  });
 });
 
 describe('bindTouchEvents', () => {
@@ -135,6 +147,17 @@ describe('bindTouchEvents', () => {
     expect(MMMNotionTasks.cancelCloseTask).toHaveBeenCalled();
   });
 
+  it('binds touch events for add button', () => {
+    const mockAddButton = document.createElement('button');
+    mockAddButton.className = 'add-button';
+    document.body.appendChild(mockAddButton);
+    MMMNotionTasks.openKeyboardForAdd = jest.fn();
+
+    MMMNotionTasks.bindTouchEvents();
+
+    mockAddButton.dispatchEvent(new Event('click'));
+    expect(MMMNotionTasks.openKeyboardForAdd).toHaveBeenCalled();
+  });
 });
 
 describe('bindTouchEvent', () => {
@@ -178,6 +201,20 @@ describe('confirmCloseTask', () => {
     expect(taskConfirm.style.display).toBe('none');
 
     document.body.removeChild(li);
+  });
+});
+
+describe('openKeyboardForAdd', () => {
+  it('sends keyboard notification', () => {
+    MMMNotionTasks.sendNotification = jest.fn();
+
+    MMMNotionTasks.openKeyboardForAdd(MMMNotionTasks);
+
+    expect(MMMNotionTasks.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
+      key: 'TODOIST_ADD_TASK',
+      style: 'default',
+      data: {},
+    });
   });
 });
 

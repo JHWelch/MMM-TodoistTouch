@@ -34,9 +34,14 @@ Module.register('MMM-TodoistTouch', {
   },
 
   // 1. Bind touch events every time the template renders on screen
-  notificationReceived: function (notification, _payload, _sender) {
+  notificationReceived: function (notification, payload, _sender) {
     if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
+    } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
+      this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
+        token: this.config.token,
+        content: payload.message,
+      });
     }
   },
 
@@ -45,23 +50,14 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.close-button', this.openModal);
     this.bindTouchEvent('.modal-button-confirm', (e) => this.confirmCloseTask(e, this));
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
-  },
-
-  bindTouchEvent (className, callback) {
-    const elements = document.querySelectorAll(className);
-    if (!elements || !elements.length) return;
-
-    elements.forEach((element) => {
-      element.addEventListener('touchend', callback);
-      element.addEventListener('click', callback);
-    });
+    this.bindTouchEvent('.add-button', () => this.openKeyboardForAdd(this));
   },
 
   openModal (e) {
-    const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
-    const pop = li.querySelector('.task-confirm');
+    const { element, taskId } = this.taskDetails(e);
+    const pop = element.querySelector('.task-confirm');
     pop.style.display = 'block';
+
     if (window.taskTimers) {
       clearTimeout(window.taskTimers[taskId]);
     } else {
@@ -71,8 +67,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   confirmCloseTask (e, self) {
-    const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
+    const { taskId } = self.taskDetails(e);
     this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
       token: self.config.token,
       taskId: taskId,
@@ -81,12 +76,19 @@ Module.register('MMM-TodoistTouch', {
   },
 
   cancelCloseTask  (e) {
-    const li = e.currentTarget.closest('li');
-    const taskId = li.getAttribute('data-task-id');
+    const { element, taskId } = this.taskDetails(e);
     if (window.taskTimers && window.taskTimers[taskId]) {
       clearTimeout(window.taskTimers[taskId]);
     }
-    li.querySelector('.task-confirm').style.display='none';
+    element.querySelector('.task-confirm').style.display='none';
+  },
+
+  openKeyboardForAdd (self) {
+    self.sendNotification('KEYBOARD', {
+      key: 'TODOIST_ADD_TASK',
+      style: 'default',
+      data: {},
+    });
   },
 
   getTemplate () {
@@ -162,8 +164,30 @@ Module.register('MMM-TodoistTouch', {
     this.loading = false;
     this.data.tasks = payload.tasks;
     this.addTaskLevels(this.data.tasks);
-    Log.log('Data removed: ' + payload.id);
 
     this.updateDom(300);
+  },
+
+  ////////////////////////
+  // Helpers
+  ////////////////////////
+
+  bindTouchEvent (className, callback) {
+    const elements = document.querySelectorAll(className);
+    if (!elements || !elements.length) return;
+
+    elements.forEach((element) => {
+      element.addEventListener('touchend', callback);
+      element.addEventListener('click', callback);
+    });
+  },
+
+  taskDetails (e) {
+    const li = e.currentTarget.closest('li');
+
+    return {
+      element: li,
+      taskId: li.getAttribute('data-task-id'),
+    };
   },
 });

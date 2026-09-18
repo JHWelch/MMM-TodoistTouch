@@ -11,15 +11,29 @@ const NodeHelper = require('node_helper');
 
 module.exports = NodeHelper.create({
   socketNotificationReceived (notification, payload) {
-    if (notification === 'MMM-TodoistTouch-FETCH') {
-      this.getData(this.api(payload.token));
-    } else if (notification === 'MMM-TodoistTouch-CLOSE-TASK') {
-      const api = this.api(payload.token);
-
-      api.closeTask(payload.taskId).then(() => {
-        this.getData(api);
-      });
+    switch (notification) {
+      case 'MMM-TodoistTouch-FETCH': this.fetchData(payload); break;
+      case 'MMM-TodoistTouch-CLOSE-TASK': this.closeTask(payload); break;
+      case 'MMM-TodoistTouch-CREATE-TASK': this.createTask(payload); break;
     }
+  },
+
+  fetchData (payload) {
+    this.getData(this.api(payload.token));
+  },
+
+  closeTask (payload) {
+    const api = this.api(payload.token);
+
+    api.closeTask(payload.taskId)
+      .then(() => this.getData(api));
+  },
+
+  createTask (payload) {
+    const api = this.api(payload.token);
+
+    api.addTask({ content: payload.content })
+      .then(() => this.getData(api));
   },
 
   api (token) {
