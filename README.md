@@ -4,11 +4,11 @@ This is a module for the [MagicMirror²](https://github.com/MagicMirrorOrg/Magic
 
 ## Installation
 
-In ~/MagicMirror/modules
+In `~/MagicMirror/modules`
 
 ```sh
 git clone https://github.com/JHWelch/MMM-TodoistTouch.git
-
+cd MMM-TodoistTouch
 npm install --omit=dev
 ```
 
