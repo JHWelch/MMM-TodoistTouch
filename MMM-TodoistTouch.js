@@ -166,7 +166,6 @@ Module.register('MMM-TodoistTouch', {
     this.loading = false;
     this.data.tasks = payload.tasks;
     this.addTaskLevels(this.data.tasks);
-    Log.log('Data removed: ' + payload.id);
 
     this.updateDom(300);
   },
