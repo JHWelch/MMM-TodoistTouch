@@ -40,11 +40,13 @@ describe('start', () => {
   const originalInterval = setInterval;
   const configObject = {
     token: 'test-token',
+    filter: 'test-filter',
   };
 
   beforeEach(() => {
     MMMNotionTasks.setConfig(configObject);
     global.setInterval = jest.fn();
+    MMMNotionTasks.config.filter = 'test-filter';
   });
 
   afterEach(() => {
