@@ -41,10 +41,11 @@ Use either the "test token" provided there, or go through an Oauth flow to get a
 
 ### Customizing Config
 
-| Option           | Required?    | Description                                                            |
-| ---------------- | ------------ | ---------------------------------------------------------------------- |
-| `token`          | **Required** | Your Todoist API token.                                                |
-| `updateInterval` | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute) |
+| Option           | Required?    | Description                                                                                                                                                  |
+| ---------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `token`          | **Required** | Your Todoist API token.                                                                                                                                      |
+| `updateInterval` | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute)                                                                                       |
+| `filter`         | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter) |
 
 ## Update
 
