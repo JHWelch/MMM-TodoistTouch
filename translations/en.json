@@ -2,5 +2,6 @@
   "CANCEL": "Cancel",
   "CONFIRM": "Confirm",
 	"LOADING": "loading...",
+  "NO_TASKS": "All tasks completed 🎉",
   "TASKS": "Tasks"
 }
