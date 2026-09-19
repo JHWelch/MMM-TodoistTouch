@@ -54,4 +54,11 @@ describe('loaded, no tasks present', () => {
   it('shows no tasks message', () => {
     expect(template).toContain('NO_TASKS');
   });
+
+  it('can show no task message from config', () => {
+    data.noTasksMessage = 'No tasks to show';
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('No tasks to show');
+  });
 });

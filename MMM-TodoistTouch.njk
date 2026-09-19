@@ -1,7 +1,9 @@
 {% if loading %}
   <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
 {% elif tasks | length == 0 %}
-  <div class="dimmed light">{{ "NO_TASKS" | translate | safe }}</div>
+  <div class="dimmed light">
+    {{ noTasksMessage | default("NO_TASKS") | translate | safe }}
+  </div>
 {% else %}
   <header class="space-between">
     <span>{{ "TASKS" | translate }}</span>

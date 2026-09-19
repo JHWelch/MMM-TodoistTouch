@@ -231,6 +231,7 @@ describe('getTemplateData', () => {
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: true,
       tasks: [],
+      noTasksMessage: undefined,
     });
   });
 
@@ -240,6 +241,7 @@ describe('getTemplateData', () => {
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: false,
       tasks: [],
+      noTasksMessage: undefined,
     });
   });
 
@@ -250,6 +252,18 @@ describe('getTemplateData', () => {
     expect(MMMNotionTasks.getTemplateData()).toEqual({
       loading: false,
       tasks: [{ id: 1, content: 'Test task' }],
+      noTasksMessage: undefined,
+    });
+  });
+
+  it('includes noTasksMessage in template data when it is set in config', () => {
+    MMMNotionTasks.loading = false;
+    MMMNotionTasks.config.noTasksMessage = 'No tasks available';
+
+    expect(MMMNotionTasks.getTemplateData()).toEqual({
+      loading: false,
+      tasks: [],
+      noTasksMessage: 'No tasks available',
     });
   });
 });

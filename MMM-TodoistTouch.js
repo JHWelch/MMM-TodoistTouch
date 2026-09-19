@@ -147,6 +147,7 @@ Module.register('MMM-TodoistTouch', {
     return {
       loading: this.loading,
       tasks: this.data?.tasks || [],
+      noTasksMessage: this.config.noTasksMessage,
     };
   },
 
