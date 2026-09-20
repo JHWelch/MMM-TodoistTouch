@@ -1,4 +1,5 @@
 /* global Module */
+/* global config */
 
 /* Magic Mirror
  * Module: MMM-TodoistTouch
@@ -148,6 +149,7 @@ Module.register('MMM-TodoistTouch', {
       loading: this.loading,
       tasks: this.data?.tasks || [],
       noTasksMessage: this.config.noTasksMessage,
+      hasKeyboard: config.modules.includes('MMM-Keyboard'),
     };
   },
 

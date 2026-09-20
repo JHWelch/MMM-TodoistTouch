@@ -8,9 +8,11 @@
   <header class="space-between">
     <span>{{ "TASKS" | translate }}</span>
 
-    <button class="add-button">
-      <span class="fa fa-plus"></span>
-    </button>
+    {% if hasKeyboard %}
+      <button class="add-button">
+        <span class="fa fa-plus"></span>
+      </button>
+    {% endif %}
   </header>
 
   <ul class="list">
