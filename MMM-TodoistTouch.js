@@ -1,4 +1,5 @@
 /* global Module */
+/* global config */
 
 /* Magic Mirror
  * Module: MMM-TodoistTouch
@@ -95,7 +96,7 @@ Module.register('MMM-TodoistTouch', {
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
-      data: {},
+      sendLabel: 'Add Task',
     });
   },
 
@@ -148,6 +149,9 @@ Module.register('MMM-TodoistTouch', {
       loading: this.loading,
       tasks: this.data?.tasks || [],
       noTasksMessage: this.config.noTasksMessage,
+      hasKeyboard: config.modules
+        .map(({module}) => module)
+        .includes('MMM-Keyboard'),
     };
   },
 

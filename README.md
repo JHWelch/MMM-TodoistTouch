@@ -12,6 +12,10 @@ cd MMM-TodoistTouch
 npm install --omit=dev
 ```
 
+### Keyboard
+
+To use the "Add Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). Either this fork or the original @lavolp3 version will work.
+
 ## Using the module
 
 To use this module, add the following configuration block to the `modules` array in the `config/config.js` file:

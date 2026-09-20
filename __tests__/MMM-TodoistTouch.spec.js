@@ -215,7 +215,7 @@ describe('openKeyboardForAdd', () => {
     expect(MMMNotionTasks.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
-      data: {},
+      sendLabel: 'Add Task',
     });
   });
 });
@@ -232,6 +232,7 @@ describe('getTemplateData', () => {
       loading: true,
       tasks: [],
       noTasksMessage: undefined,
+      hasKeyboard: false,
     });
   });
 
@@ -242,6 +243,7 @@ describe('getTemplateData', () => {
       loading: false,
       tasks: [],
       noTasksMessage: undefined,
+      hasKeyboard: false,
     });
   });
 
@@ -253,6 +255,7 @@ describe('getTemplateData', () => {
       loading: false,
       tasks: [{ id: 1, content: 'Test task' }],
       noTasksMessage: undefined,
+      hasKeyboard: false,
     });
   });
 
@@ -264,6 +267,21 @@ describe('getTemplateData', () => {
       loading: false,
       tasks: [],
       noTasksMessage: 'No tasks available',
+      hasKeyboard: false,
+    });
+
+  });
+
+  it('toggles hasKeyboard if MMM-Keyboard is loaded', () => {
+    global.config.modules = [
+      {module: 'MMM-Keyboard'},
+    ];
+    MMMNotionTasks.loading = false;
+
+    expect(MMMNotionTasks.getTemplateData()).toEqual({
+      loading: false,
+      tasks: [],
+      hasKeyboard: true,
     });
   });
 });

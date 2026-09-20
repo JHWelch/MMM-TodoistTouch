@@ -40,6 +40,22 @@ describe('loaded with tasks', () => {
 
     expect(template).toContain('This is a very long task that should be trimmed at...');
   });
+
+  it('does not show the add button if the keyboard is loaded', () => {
+    data.hasKeyboard = false;
+
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).not.toContain('add-button');
+  });
+
+  it('shows the add button if the keyboard is loaded', () => {
+    data.hasKeyboard = true;
+
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('add-button');
+  });
 });
 
 describe('loaded, no tasks present', () => {
