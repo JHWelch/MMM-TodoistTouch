@@ -149,7 +149,9 @@ Module.register('MMM-TodoistTouch', {
       loading: this.loading,
       tasks: this.data?.tasks || [],
       noTasksMessage: this.config.noTasksMessage,
-      hasKeyboard: config.modules.includes('MMM-Keyboard'),
+      hasKeyboard: config.modules
+        .map(({module}) => module)
+        .includes('MMM-Keyboard'),
     };
   },
 

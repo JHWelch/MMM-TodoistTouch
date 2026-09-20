@@ -274,7 +274,7 @@ describe('getTemplateData', () => {
 
   it('toggles hasKeyboard if MMM-Keyboard is loaded', () => {
     global.config.modules = [
-      'MMM-Keyboard',
+      {module: 'MMM-Keyboard'},
     ];
     MMMNotionTasks.loading = false;
 
