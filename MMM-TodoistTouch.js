@@ -95,7 +95,7 @@ Module.register('MMM-TodoistTouch', {
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
-      data: {},
+      sendLabel: 'Add Task',
     });
   },
 

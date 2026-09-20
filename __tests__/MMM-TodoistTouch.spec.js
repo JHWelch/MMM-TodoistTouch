@@ -215,7 +215,7 @@ describe('openKeyboardForAdd', () => {
     expect(MMMNotionTasks.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
-      data: {},
+      sendLabel: 'Add Task',
     });
   });
 });
