@@ -32,7 +32,10 @@ module.exports = NodeHelper.create({
   createTask (payload) {
     const context = this.context(payload);
 
-    context.api.addTask({ content: payload.content })
+    context.api.addTask({
+      content: payload.content,
+      ...(payload.addTaskArgs ?? {}),
+    })
       .then(() => this.getData(context));
   },
 

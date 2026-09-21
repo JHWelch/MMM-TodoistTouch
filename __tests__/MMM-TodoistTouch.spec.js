@@ -85,30 +85,64 @@ describe('start', () => {
 });
 
 describe('notificationReceived', () => {
-  it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
-    MMMNotionTasks.bindTouchEvents = jest.fn();
-    MMMNotionTasks.notificationReceived('SOME_OTHER_NOTIFICATION');
+  describe('MODULE_DOM_UPDATED', () => {
+    it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
+      MMMNotionTasks.bindTouchEvents = jest.fn();
+      MMMNotionTasks.notificationReceived('SOME_OTHER_NOTIFICATION');
 
-    expect(MMMNotionTasks.bindTouchEvents).not.toHaveBeenCalled();
+      expect(MMMNotionTasks.bindTouchEvents).not.toHaveBeenCalled();
+    });
+
+    it('binds touch events if notification is MODULE_DOM_UPDATED', () => {
+      MMMNotionTasks.bindTouchEvents = jest.fn();
+      MMMNotionTasks.notificationReceived('MODULE_DOM_UPDATED');
+
+      expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
+    });
   });
+  describe('KEYBOARD_INPUT', () => {
+    it('triggers a backend create if notification with key TODOIST_ADD_TASK', () => {
+      const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+      MMMNotionTasks.sendSocketNotification = jest.fn();
 
-  it('binds touch events if notification is MODULE_DOM_UPDATED', () => {
-    MMMNotionTasks.bindTouchEvents = jest.fn();
-    MMMNotionTasks.notificationReceived('MODULE_DOM_UPDATED');
+      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
 
-    expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
-  });
+      expect(MMMNotionTasks.sendSocketNotification)
+        .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+          token: MMMNotionTasks.config.token,
+          content: payload.message,
+        });
+    });
 
-  it('triggers a backend create if notification is KEYBOARD_INPUT with key TODOIST_ADD_TASK', () => {
-    const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
-    MMMNotionTasks.sendSocketNotification = jest.fn();
+    it('includes extra addTaskArgs if provided in config', () => {
+      const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+      MMMNotionTasks.sendSocketNotification = jest.fn();
+      MMMNotionTasks.config.addTaskArgs = {
+        projectId: 'project-id',
+        assigneeId: 'assignee-id',
+      };
 
-    MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
-    expect(MMMNotionTasks.sendSocketNotification)
-      .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
-        token: MMMNotionTasks.config.token,
-        content: payload.message,
-      });
+      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+
+      expect(MMMNotionTasks.sendSocketNotification)
+        .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+          token: MMMNotionTasks.config.token,
+          content: payload.message,
+          addTaskArgs: {
+            projectId: 'project-id',
+            assigneeId: 'assignee-id',
+          },
+        });
+    });
+
+    it('ignores other keys', () => {
+      const payload = { key: 'SOMETHING ELSE', message: 'Test message' };
+      MMMNotionTasks.sendSocketNotification = jest.fn();
+
+      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+
+      expect(MMMNotionTasks.sendSocketNotification).not.toHaveBeenCalled();
+    });
   });
 });
 

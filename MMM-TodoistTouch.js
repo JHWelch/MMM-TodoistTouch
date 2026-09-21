@@ -50,6 +50,7 @@ Module.register('MMM-TodoistTouch', {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.todoistConfig(),
         content: payload.message,
+        addTaskArgs: this.config.addTaskArgs,
       });
     }
   },
