@@ -67,17 +67,42 @@ describe('socketNotificationReceived', () => {
   });
 
   describe('MMM-TodoistTouch-CREATE-TASK', () => {
-    it('should call addTask and then getData', async () => {
-      const mockGetData = jest.fn();
-      helper.getData = mockGetData;
+    let mockGetData;
+    const notification = 'MMM-TodoistTouch-CREATE-TASK';
 
-      const notification = 'MMM-TodoistTouch-CREATE-TASK';
+    beforeEach(() => {
+      mockGetData = jest.fn();
+      helper.getData = mockGetData;
+    });
+
+    it('should call addTask and then getData', async () => {
       const payload = { token: 'test-token', content: 'New Task' };
 
       await helper.socketNotificationReceived(notification, payload);
 
       expect(mockApi.addTask)
         .toHaveBeenCalledWith({ content: payload.content });
+      expect(mockGetData).toHaveBeenCalled();
+    });
+
+    it('passes extra addTestArgs if provided', async () => {
+      const payload = {
+        token: 'test-token',
+        content: 'New Task',
+        addTaskArgs: {
+          projectId: 'project-id',
+          assigneeId: 'assignee-id',
+        },
+      };
+
+      await helper.socketNotificationReceived(notification, payload);
+
+      expect(mockApi.addTask)
+        .toHaveBeenCalledWith({
+          content: payload.content,
+          projectId: 'project-id',
+          assigneeId: 'assignee-id',
+        });
       expect(mockGetData).toHaveBeenCalled();
     });
   });

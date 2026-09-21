@@ -11,6 +11,7 @@
 Module.register('MMM-TodoistTouch', {
   defaults: {
     updateInterval: 60000,
+    addTaskArgs: {},
   },
 
   requiresVersion: '2.28.0',
@@ -50,6 +51,7 @@ Module.register('MMM-TodoistTouch', {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.todoistConfig(),
         content: payload.message,
+        addTaskArgs: this.config.addTaskArgs,
       });
     }
   },
