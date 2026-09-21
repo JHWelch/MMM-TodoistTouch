@@ -1,4 +1,8 @@
 /** Styles */
+.MMM-TodoistTouch {
+  cursor: pointer;
+}
+
 .MMM-TodoistTouch .space-between {
   display: flex;
   justify-content: space-between;
