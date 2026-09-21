@@ -111,6 +111,7 @@ describe('notificationReceived', () => {
       expect(MMMNotionTasks.sendSocketNotification)
         .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
           token: MMMNotionTasks.config.token,
+          addTaskArgs: {},
           content: payload.message,
         });
     });
