@@ -11,6 +11,7 @@
 Module.register('MMM-TodoistTouch', {
   defaults: {
     updateInterval: 60000,
+    addTaskArgs: {},
   },
 
   requiresVersion: '2.28.0',
