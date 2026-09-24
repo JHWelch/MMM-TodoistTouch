@@ -29,9 +29,8 @@
     "fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@jhwelch/mmm-eslint-config": "^4.0.0",
+    "@jhwelch/mmm-eslint-config": "^5.0.0",
     "eslint": "^10.10.0",
-    "globals": "^17.12.0",
     "jest": "^30.5.1",
     "jest-environment-jsdom": "^30.5.1",
     "nunjucks": "^3.2.4"
