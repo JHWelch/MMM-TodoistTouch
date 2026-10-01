@@ -1,9 +1,9 @@
 {
   "name": "MMM-TodoistTouch",
   "version": "1.0.0",
-  "description": "A Magic Mirror Module to display tasks from a Notion Task database",
+  "description": "A Magic Mirror Module to display and interact with tasks from Todoist on a touch screen.",
   "keywords": [
-    "notion",
+    "todoist",
     "tasks",
     "todo",
     "magic",

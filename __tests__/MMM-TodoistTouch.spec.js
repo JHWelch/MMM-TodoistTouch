@@ -5,14 +5,14 @@ require('../__mocks__/globalLogger');
 
 const name = 'MMM-TodoistTouch';
 
-let MMMNotionTasks;
+let MMMTodoistTouch;
 
 beforeEach(() => {
   jest.resetModules();
   require('../MMM-TodoistTouch');
 
-  MMMNotionTasks = global.Module.create(name);
-  MMMNotionTasks.setData({ name, identifier: `Module_1_${name}` });
+  MMMTodoistTouch = global.Module.create(name);
+  MMMTodoistTouch.setData({ name, identifier: `Module_1_${name}` });
 
   const date = new Date(2023, 9, 1); // October 1, 2023
   jest.useFakeTimers().setSystemTime(date);
@@ -23,18 +23,18 @@ afterEach(() => {
 });
 
 it('has a default config', () => {
-  expect(MMMNotionTasks.defaults).toEqual({
+  expect(MMMTodoistTouch.defaults).toEqual({
     updateInterval: 60000,
     addTaskArgs: {},
   });
 });
 
 it('requires expected version', () => {
-  expect(MMMNotionTasks.requiresVersion).toBe('2.28.0');
+  expect(MMMTodoistTouch.requiresVersion).toBe('2.28.0');
 });
 
 it('inits module in loading state', () => {
-  expect(MMMNotionTasks.loading).toBe(true);
+  expect(MMMTodoistTouch.loading).toBe(true);
 });
 
 describe('start', () => {
@@ -45,9 +45,9 @@ describe('start', () => {
   };
 
   beforeEach(() => {
-    MMMNotionTasks.setConfig(configObject);
+    MMMTodoistTouch.setConfig(configObject);
     global.setInterval = jest.fn();
-    MMMNotionTasks.config.filter = 'test-filter';
+    MMMTodoistTouch.config.filter = 'test-filter';
   });
 
   afterEach(() => {
@@ -55,30 +55,30 @@ describe('start', () => {
   });
 
   it('logs start of module', () => {
-    MMMNotionTasks.start();
+    MMMTodoistTouch.start();
 
     expect(global.Log.info).toHaveBeenCalledWith('Starting module: MMM-TodoistTouch');
   });
 
   it('requests data from node_helper with config variables', () => {
-    MMMNotionTasks.start();
+    MMMTodoistTouch.start();
 
-    expect(MMMNotionTasks.sendSocketNotification)
+    expect(MMMTodoistTouch.sendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', configObject);
   });
 
   test('interval requests data from node_helper', () => {
-    MMMNotionTasks.start();
+    MMMTodoistTouch.start();
     global.setInterval.mock.calls[0][0]();
 
-    expect(MMMNotionTasks.sendSocketNotification).toHaveBeenCalledTimes(2);
-    expect(MMMNotionTasks.sendSocketNotification)
+    expect(MMMTodoistTouch.sendSocketNotification).toHaveBeenCalledTimes(2);
+    expect(MMMTodoistTouch.sendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', configObject);
   });
 
   test('interval set starts with default value', () => {
-    MMMNotionTasks.setConfig({ updateInterval: 100000 });
-    MMMNotionTasks.start();
+    MMMTodoistTouch.setConfig({ updateInterval: 100000 });
+    MMMTodoistTouch.start();
 
     expect(global.setInterval)
       .toHaveBeenCalledWith(expect.any(Function), 100000);
@@ -88,29 +88,29 @@ describe('start', () => {
 describe('notificationReceived', () => {
   describe('MODULE_DOM_UPDATED', () => {
     it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
-      MMMNotionTasks.bindTouchEvents = jest.fn();
-      MMMNotionTasks.notificationReceived('SOME_OTHER_NOTIFICATION');
+      MMMTodoistTouch.bindTouchEvents = jest.fn();
+      MMMTodoistTouch.notificationReceived('SOME_OTHER_NOTIFICATION');
 
-      expect(MMMNotionTasks.bindTouchEvents).not.toHaveBeenCalled();
+      expect(MMMTodoistTouch.bindTouchEvents).not.toHaveBeenCalled();
     });
 
     it('binds touch events if notification is MODULE_DOM_UPDATED', () => {
-      MMMNotionTasks.bindTouchEvents = jest.fn();
-      MMMNotionTasks.notificationReceived('MODULE_DOM_UPDATED');
+      MMMTodoistTouch.bindTouchEvents = jest.fn();
+      MMMTodoistTouch.notificationReceived('MODULE_DOM_UPDATED');
 
-      expect(MMMNotionTasks.bindTouchEvents).toHaveBeenCalled();
+      expect(MMMTodoistTouch.bindTouchEvents).toHaveBeenCalled();
     });
   });
   describe('KEYBOARD_INPUT', () => {
     it('triggers a backend create if notification with key TODOIST_ADD_TASK', () => {
       const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
-      MMMNotionTasks.sendSocketNotification = jest.fn();
+      MMMTodoistTouch.sendSocketNotification = jest.fn();
 
-      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+      MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
 
-      expect(MMMNotionTasks.sendSocketNotification)
+      expect(MMMTodoistTouch.sendSocketNotification)
         .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
-          token: MMMNotionTasks.config.token,
+          token: MMMTodoistTouch.config.token,
           addTaskArgs: {},
           content: payload.message,
         });
@@ -118,17 +118,17 @@ describe('notificationReceived', () => {
 
     it('includes extra addTaskArgs if provided in config', () => {
       const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
-      MMMNotionTasks.sendSocketNotification = jest.fn();
-      MMMNotionTasks.config.addTaskArgs = {
+      MMMTodoistTouch.sendSocketNotification = jest.fn();
+      MMMTodoistTouch.config.addTaskArgs = {
         projectId: 'project-id',
         assigneeId: 'assignee-id',
       };
 
-      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+      MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
 
-      expect(MMMNotionTasks.sendSocketNotification)
+      expect(MMMTodoistTouch.sendSocketNotification)
         .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
-          token: MMMNotionTasks.config.token,
+          token: MMMTodoistTouch.config.token,
           content: payload.message,
           addTaskArgs: {
             projectId: 'project-id',
@@ -139,11 +139,11 @@ describe('notificationReceived', () => {
 
     it('ignores other keys', () => {
       const payload = { key: 'SOMETHING ELSE', message: 'Test message' };
-      MMMNotionTasks.sendSocketNotification = jest.fn();
+      MMMTodoistTouch.sendSocketNotification = jest.fn();
 
-      MMMNotionTasks.notificationReceived('KEYBOARD_INPUT', payload);
+      MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
 
-      expect(MMMNotionTasks.sendSocketNotification).not.toHaveBeenCalled();
+      expect(MMMTodoistTouch.sendSocketNotification).not.toHaveBeenCalled();
     });
   });
 });
@@ -153,48 +153,48 @@ describe('bindTouchEvents', () => {
     const mockCloseButton = document.createElement('button');
     mockCloseButton.className = 'close-button';
     document.body.appendChild(mockCloseButton);
-    MMMNotionTasks.openModal = jest.fn();
+    MMMTodoistTouch.openModal = jest.fn();
 
-    MMMNotionTasks.bindTouchEvents();
+    MMMTodoistTouch.bindTouchEvents();
 
     mockCloseButton.dispatchEvent(new Event('touchend'));
-    expect(MMMNotionTasks.openModal).toHaveBeenCalled();
+    expect(MMMTodoistTouch.openModal).toHaveBeenCalled();
   });
 
   it('binds touch events for modal confirm button', () => {
     const mockConfirmButton = document.createElement('button');
     mockConfirmButton.className = 'modal-button-confirm';
     document.body.appendChild(mockConfirmButton);
-    MMMNotionTasks.confirmCloseTask = jest.fn();
+    MMMTodoistTouch.confirmCloseTask = jest.fn();
 
-    MMMNotionTasks.bindTouchEvents();
+    MMMTodoistTouch.bindTouchEvents();
 
     mockConfirmButton.dispatchEvent(new Event('click'));
-    expect(MMMNotionTasks.confirmCloseTask).toHaveBeenCalled();
+    expect(MMMTodoistTouch.confirmCloseTask).toHaveBeenCalled();
   });
 
   it('binds touch events for modal cancel button', () => {
     const mockCancelButton = document.createElement('button');
     mockCancelButton.className = 'modal-button-cancel';
     document.body.appendChild(mockCancelButton);
-    MMMNotionTasks.cancelCloseTask = jest.fn();
+    MMMTodoistTouch.cancelCloseTask = jest.fn();
 
-    MMMNotionTasks.bindTouchEvents();
+    MMMTodoistTouch.bindTouchEvents();
 
     mockCancelButton.dispatchEvent(new Event('touchend'));
-    expect(MMMNotionTasks.cancelCloseTask).toHaveBeenCalled();
+    expect(MMMTodoistTouch.cancelCloseTask).toHaveBeenCalled();
   });
 
   it('binds touch events for add button', () => {
     const mockAddButton = document.createElement('button');
     mockAddButton.className = 'add-button';
     document.body.appendChild(mockAddButton);
-    MMMNotionTasks.openKeyboardForAdd = jest.fn();
+    MMMTodoistTouch.openKeyboardForAdd = jest.fn();
 
-    MMMNotionTasks.bindTouchEvents();
+    MMMTodoistTouch.bindTouchEvents();
 
     mockAddButton.dispatchEvent(new Event('click'));
-    expect(MMMNotionTasks.openKeyboardForAdd).toHaveBeenCalled();
+    expect(MMMTodoistTouch.openKeyboardForAdd).toHaveBeenCalled();
   });
 });
 
@@ -205,7 +205,7 @@ describe('bindTouchEvent', () => {
     document.body.appendChild(mockElement);
 
     const callback = jest.fn();
-    MMMNotionTasks.bindTouchEvent('.test-class', callback);
+    MMMTodoistTouch.bindTouchEvent('.test-class', callback);
 
     mockElement.dispatchEvent(new Event('touchend'));
     mockElement.dispatchEvent(new Event('click'));
@@ -227,13 +227,13 @@ describe('confirmCloseTask', () => {
     li.appendChild(triggerButton);
     document.body.appendChild(li);
     const mockEvent = { currentTarget: triggerButton };
-    MMMNotionTasks.sendSocketNotification = jest.fn();
+    MMMTodoistTouch.sendSocketNotification = jest.fn();
 
-    MMMNotionTasks.confirmCloseTask(mockEvent, MMMNotionTasks);
+    MMMTodoistTouch.confirmCloseTask(mockEvent, MMMTodoistTouch);
 
-    expect(MMMNotionTasks.sendSocketNotification)
+    expect(MMMTodoistTouch.sendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-CLOSE-TASK', {
-        token: MMMNotionTasks.config.token,
+        token: MMMTodoistTouch.config.token,
         taskId: '123',
       });
     expect(taskConfirm.style.display).toBe('none');
@@ -244,11 +244,11 @@ describe('confirmCloseTask', () => {
 
 describe('openKeyboardForAdd', () => {
   it('sends keyboard notification', () => {
-    MMMNotionTasks.sendNotification = jest.fn();
+    MMMTodoistTouch.sendNotification = jest.fn();
 
-    MMMNotionTasks.openKeyboardForAdd(MMMNotionTasks);
+    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
 
-    expect(MMMNotionTasks.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
+    expect(MMMTodoistTouch.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
@@ -258,13 +258,13 @@ describe('openKeyboardForAdd', () => {
 
 describe('getTemplate', () => {
   it('returns template path', () => {
-    expect(MMMNotionTasks.getTemplate()).toBe('MMM-TodoistTouch.njk');
+    expect(MMMTodoistTouch.getTemplate()).toBe('MMM-TodoistTouch.njk');
   });
 });
 
 describe('getTemplateData', () => {
   it('returns template data when loading', () => {
-    expect(MMMNotionTasks.getTemplateData()).toEqual({
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: true,
       tasks: [],
       noTasksMessage: undefined,
@@ -273,9 +273,9 @@ describe('getTemplateData', () => {
   });
 
   it('returns template data when not loading', () => {
-    MMMNotionTasks.loading = false;
+    MMMTodoistTouch.loading = false;
 
-    expect(MMMNotionTasks.getTemplateData()).toEqual({
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
       tasks: [],
       noTasksMessage: undefined,
@@ -284,10 +284,10 @@ describe('getTemplateData', () => {
   });
 
   it('includes tasks in template data when they are available', () => {
-    MMMNotionTasks.loading = false;
-    MMMNotionTasks.data.tasks = [{ id: 1, content: 'Test task' }];
+    MMMTodoistTouch.loading = false;
+    MMMTodoistTouch.data.tasks = [{ id: 1, content: 'Test task' }];
 
-    expect(MMMNotionTasks.getTemplateData()).toEqual({
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
       tasks: [{ id: 1, content: 'Test task' }],
       noTasksMessage: undefined,
@@ -296,10 +296,10 @@ describe('getTemplateData', () => {
   });
 
   it('includes noTasksMessage in template data when it is set in config', () => {
-    MMMNotionTasks.loading = false;
-    MMMNotionTasks.config.noTasksMessage = 'No tasks available';
+    MMMTodoistTouch.loading = false;
+    MMMTodoistTouch.config.noTasksMessage = 'No tasks available';
 
-    expect(MMMNotionTasks.getTemplateData()).toEqual({
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
       tasks: [],
       noTasksMessage: 'No tasks available',
@@ -312,9 +312,9 @@ describe('getTemplateData', () => {
     global.config.modules = [
       {module: 'MMM-Keyboard'},
     ];
-    MMMNotionTasks.loading = false;
+    MMMTodoistTouch.loading = false;
 
-    expect(MMMNotionTasks.getTemplateData()).toEqual({
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
       tasks: [],
       hasKeyboard: true,
@@ -324,7 +324,7 @@ describe('getTemplateData', () => {
 
 describe('getStyles', () => {
   it('returns styles path', () => {
-    expect(MMMNotionTasks.getStyles()).toEqual([
+    expect(MMMTodoistTouch.getStyles()).toEqual([
       'font-awesome.css',
       'MMM-TodoistTouch.css',
     ]);
@@ -333,18 +333,18 @@ describe('getStyles', () => {
 
 describe('socketNotificationReceived', () => {
   it('ignores unexpected notifications', () => {
-    MMMNotionTasks.socketNotificationReceived('UNEXPECTED_NOTIFICATION', {});
+    MMMTodoistTouch.socketNotificationReceived('UNEXPECTED_NOTIFICATION', {});
 
-    expect(MMMNotionTasks.loading).toBe(true);
-    expect(MMMNotionTasks.data.tasks).toBeUndefined();
+    expect(MMMTodoistTouch.loading).toBe(true);
+    expect(MMMTodoistTouch.data.tasks).toBeUndefined();
   });
 
   it('updates loading state and data on expected notification', () => {
     const payload = { tasks: [{ id: 1, content: 'Test task' }] };
 
-    MMMNotionTasks.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
+    MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
-    expect(MMMNotionTasks.loading).toBe(false);
-    expect(MMMNotionTasks.data.tasks).toEqual(payload.tasks);
+    expect(MMMTodoistTouch.loading).toBe(false);
+    expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
   });
 });
