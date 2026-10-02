@@ -85,6 +85,23 @@ describe('start', () => {
   });
 });
 
+describe('getData', () => {
+  it('sends socket notification with config variables', () => {
+    MMMTodoistTouch.setConfig({
+      token: 'test-token',
+      filter: 'test-filter',
+    });
+
+    MMMTodoistTouch.getData();
+
+    expect(MMMTodoistTouch.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', {
+        token: 'test-token',
+        filter: 'test-filter',
+      });
+  });
+});
+
 describe('notificationReceived', () => {
   describe('MODULE_DOM_UPDATED', () => {
     it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
