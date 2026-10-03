@@ -41,9 +41,9 @@ module.exports = NodeHelper.create({
 
   context ({token, filter, identifier}) {
     return {
+      identifier,
       api: new TodoistApi(token),
       filter,
-      identifier,
     };
   },
 
@@ -53,8 +53,8 @@ module.exports = NodeHelper.create({
       : await api.getTasks();
 
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
-      tasks: results,
       identifier,
+      tasks: results,
     });
   },
 });

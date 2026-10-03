@@ -39,8 +39,8 @@ Module.register('MMM-TodoistTouch', {
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', {
       ...this.todoistConfig(),
-      filter: this.config.filter,
       identifier: this.identifier,
+      filter: this.config.filter,
     });
   },
 
