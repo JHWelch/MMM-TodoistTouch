@@ -12,7 +12,7 @@ beforeEach(() => {
   require('../MMM-TodoistTouch');
 
   MMMTodoistTouch = global.Module.create(name);
-  MMMTodoistTouch.setData({ name, identifier: `Module_1_${name}` });
+  MMMTodoistTouch.setData({ name, identifier: `module_1_${name}` });
 
   const date = new Date(2023, 9, 1); // October 1, 2023
   jest.useFakeTimers().setSystemTime(date);
@@ -43,11 +43,16 @@ describe('start', () => {
     token: 'test-token',
     filter: 'test-filter',
   };
+  let payload;
 
   beforeEach(() => {
     MMMTodoistTouch.setConfig(configObject);
     global.setInterval = jest.fn();
     MMMTodoistTouch.config.filter = 'test-filter';
+    payload = {
+      ...configObject,
+      identifier: MMMTodoistTouch.identifier,
+    };
   });
 
   afterEach(() => {
@@ -64,7 +69,7 @@ describe('start', () => {
     MMMTodoistTouch.start();
 
     expect(MMMTodoistTouch.sendSocketNotification)
-      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', configObject);
+      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', payload);
   });
 
   test('interval requests data from node_helper', () => {
@@ -73,7 +78,7 @@ describe('start', () => {
 
     expect(MMMTodoistTouch.sendSocketNotification).toHaveBeenCalledTimes(2);
     expect(MMMTodoistTouch.sendSocketNotification)
-      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', configObject);
+      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', payload);
   });
 
   test('interval set starts with default value', () => {
@@ -96,6 +101,7 @@ describe('getData', () => {
 
     expect(MMMTodoistTouch.sendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', {
+        identifier: MMMTodoistTouch.identifier,
         token: 'test-token',
         filter: 'test-filter',
       });

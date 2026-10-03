@@ -40,6 +40,7 @@ Module.register('MMM-TodoistTouch', {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', {
       ...this.todoistConfig(),
       filter: this.config.filter,
+      identifier: this.identifier,
     });
   },
 
