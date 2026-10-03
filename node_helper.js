@@ -39,19 +39,21 @@ module.exports = NodeHelper.create({
       .then(() => this.getData(context));
   },
 
-  context ({token, filter}) {
+  context ({token, filter, identifier}) {
     return {
+      identifier,
       api: new TodoistApi(token),
       filter,
     };
   },
 
-  async getData ({api, filter}) {
+  async getData ({api, filter, identifier}) {
     const { results } = filter
       ? await api.getTasksByFilter({ query: filter })
       : await api.getTasks();
 
     this.sendSocketNotification('MMM-TodoistTouch-DATA', {
+      identifier,
       tasks: results,
     });
   },
