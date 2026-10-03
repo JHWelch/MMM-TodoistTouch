@@ -116,11 +116,15 @@ describe('getData', () => {
     const mockTasks = [{ id: 1, content: 'Task 1' }, { id: 2, content: 'Task 2' }];
     mockApi.getTasks.mockResolvedValue({ results: mockTasks });
 
-    await helper.getData({api: mockApi});
+    await helper.getData({
+      api: mockApi,
+      identifier: 'module_1_MMM-TodoistTouch',
+    });
 
     expect(mockApi.getTasks).toHaveBeenCalled();
     expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
       tasks: mockTasks,
+      identifier: 'module_1_MMM-TodoistTouch',
     });
   });
 
@@ -131,13 +135,18 @@ describe('getData', () => {
     const mockTasks = [{ id: 1, content: 'Task 1' }];
     mockApi.getTasksByFilter.mockResolvedValue({ results: mockTasks });
 
-    await helper.getData({api: mockApi, filter: 'test-filter' });
+    await helper.getData({
+      api: mockApi,
+      filter: 'test-filter',
+      identifier: 'module_1_MMM-TodoistTouch',
+    });
 
     expect(mockApi.getTasksByFilter)
       .toHaveBeenCalledWith({query: 'test-filter'});
     expect(mockSendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
         tasks: mockTasks,
+        identifier: 'module_1_MMM-TodoistTouch',
       });
   });
 });
