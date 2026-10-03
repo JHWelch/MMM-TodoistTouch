@@ -355,16 +355,35 @@ describe('getStyles', () => {
 });
 
 describe('socketNotificationReceived', () => {
+  let payload;
+
+  beforeEach(() => {
+    payload = {
+      tasks: [{ id: 1, content: 'Test task' }],
+      identifier: MMMTodoistTouch.identifier,
+    };
+  });
+
   it('ignores unexpected notifications', () => {
-    MMMTodoistTouch.socketNotificationReceived('UNEXPECTED_NOTIFICATION', {});
+    MMMTodoistTouch.socketNotificationReceived('UNEXPECTED_NOTIFICATION', payload);
+
+    expect(MMMTodoistTouch.loading).toBe(true);
+    expect(MMMTodoistTouch.data.tasks).toBeUndefined();
+  });
+
+  it('ignores notifications with unexpected identifier', () => {
+    const wrongIdentifierPayload = {
+      ...payload,
+      identifier: 'wrong_identifier',
+    };
+
+    MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', wrongIdentifierPayload);
 
     expect(MMMTodoistTouch.loading).toBe(true);
     expect(MMMTodoistTouch.data.tasks).toBeUndefined();
   });
 
   it('updates loading state and data on expected notification', () => {
-    const payload = { tasks: [{ id: 1, content: 'Test task' }] };
-
     MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
     expect(MMMTodoistTouch.loading).toBe(false);

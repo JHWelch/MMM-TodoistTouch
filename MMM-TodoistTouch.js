@@ -173,7 +173,10 @@ Module.register('MMM-TodoistTouch', {
   },
 
   socketNotificationReceived (notification, payload) {
-    if (notification !== 'MMM-TodoistTouch-DATA') {
+    if (
+      notification !== 'MMM-TodoistTouch-DATA' ||
+      payload.identifier !== this.identifier
+    ) {
       return;
     }
 
