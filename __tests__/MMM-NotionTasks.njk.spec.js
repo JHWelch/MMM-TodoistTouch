@@ -62,6 +62,7 @@ describe('loaded with tabs of tasks', () => {
   beforeEach(() => {
     data = {
       loading: false,
+      tabs: ['Tab 1', 'Tab 2'],
       taskGroups: [
         [
           { content: 'Task 1' },
@@ -105,6 +106,13 @@ describe('loaded with tabs of tasks', () => {
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
 
     expect(template).toContain('add-button');
+  });
+
+  it('shows tabs', () => {
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('Tab 1');
+    expect(template).toContain('Tab 2');
   });
 });
 

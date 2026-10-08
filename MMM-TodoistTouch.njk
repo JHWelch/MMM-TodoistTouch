@@ -11,6 +11,16 @@
     {% endif %}
   </header>
 
+  {% if tabs %}
+    <div class="tabs">
+      {% for tab in tabs %}
+        <button class="tab-button" data-tab-id="{{ loop.index0 }}">
+          {{ tab }}
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   {% for tasks in taskGroups %}
     {% if tasks | length == 0 %}
       <div class="dimmed light">
