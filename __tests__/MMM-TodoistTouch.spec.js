@@ -316,6 +316,10 @@ describe('getTemplate', () => {
 });
 
 describe('getTemplateData', () => {
+  afterEach(() => {
+    global.config.modules = [];
+  });
+
   it('returns template data when loading', () => {
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: true,
@@ -371,6 +375,37 @@ describe('getTemplateData', () => {
       loading: false,
       taskGroups: [[]],
       hasKeyboard: true,
+    });
+  });
+
+  it('can populate data for tabs', () => {
+    MMMTodoistTouch.loading = false;
+    MMMTodoistTouch.data.tasks = [
+      { id: 1, content: 'Test task1' },
+      { id: 2, content: 'Test task2' },
+    ];
+    MMMTodoistTouch.config.tabs = [
+      {
+        name: 'Tab 1',
+        filter: 'test-filter-1',
+      },
+      {
+        name: 'Tab 2',
+        filter: 'test-filter-2',
+      },
+    ];
+
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
+      loading: false,
+      taskGroups: [
+        { id: 1, content: 'Test task1' },
+        { id: 2, content: 'Test task2' },
+      ],
+      tabs: [
+        'Tab 1',
+        'Tab 2',
+      ],
+      hasKeyboard: false,
     });
   });
 });

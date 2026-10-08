@@ -152,6 +152,7 @@ Module.register('MMM-TodoistTouch', {
     return {
       loading: this.loading,
       taskGroups: this.data?.tasks || [[]],
+      tabs: this.config.tabs?.map(tab => tab.name),
       noTasksMessage: this.config.noTasksMessage,
       hasKeyboard: config.modules
         .map(({module}) => module)
