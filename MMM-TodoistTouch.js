@@ -183,7 +183,7 @@ Module.register('MMM-TodoistTouch', {
 
     this.loading = false;
     this.data.tasks = payload.tasks;
-    this.addTaskLevels(this.data.tasks);
+    this.data.tasks.forEach(task => this.addTaskLevels(task));
 
     this.updateDom(300);
   },

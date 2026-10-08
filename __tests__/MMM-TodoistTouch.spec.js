@@ -389,7 +389,7 @@ describe('socketNotificationReceived', () => {
 
   beforeEach(() => {
     payload = {
-      tasks: [{ id: 1, content: 'Test task' }],
+      tasks: [[{ id: 1, content: 'Test task' }]],
       identifier: MMMTodoistTouch.identifier,
     };
   });
@@ -414,9 +414,27 @@ describe('socketNotificationReceived', () => {
   });
 
   it('updates loading state and data on expected notification', () => {
+    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+
     MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+  });
+
+  it('can load data back from tabs', () => {
+    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    payload.tasks = [
+      [{ id: 1, content: 'Test task 1' }],
+      [{ id: 2, content: 'Test task 2' }],
+    ];
+
+    MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
+
+    expect(MMMTodoistTouch.loading).toBe(false);
+    expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[1]);
   });
 });
