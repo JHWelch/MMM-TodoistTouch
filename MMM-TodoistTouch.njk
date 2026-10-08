@@ -27,7 +27,7 @@
         {{ noTasksMessage | default("NO_TASKS") | translate | safe }}
       </div>
     {% else %}
-      <ul class="list" data-tab-id="{{ loop.index0 }}">
+      <ul class="list {% if loop.first %}active{% endif %}" data-tab-id="{{ loop.index0 }}">
         {% for task in tasks %}
           <li class="task-list-item" data-task-id="{{ task.id }}">
             <!-- MAIN TASK CONTAINER -->
