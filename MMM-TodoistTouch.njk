@@ -1,9 +1,5 @@
 {% if loading %}
   <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
-{% elif tasks | length == 0 %}
-  <div class="dimmed light">
-    {{ noTasksMessage | default("NO_TASKS") | translate | safe }}
-  </div>
 {% else %}
   <header class="space-between small">
     <span>{{ "TASKS" | translate }}</span>
@@ -15,41 +11,49 @@
     {% endif %}
   </header>
 
-  <ul class="list">
-    {% for task in tasks %}
-      <li class="task-list-item" data-task-id="{{ task.id }}">
-        <!-- MAIN TASK CONTAINER -->
-        <div class="task-main">
-          <!-- ONCLICK: Shows pop-up and initializes a strict 15-second auto-cancel window -->
-          <button class="close-button small" type="button">
-            <span>
-              {# <span class="fa fa-square-check"></span>  #}
-              {% for i in range(0, task.level) %}
-                <span> _ </span>
-              {% endfor %}
-              <span>{{ task.content | truncate(40) }}</span>
-            </span>
-          </button>
-        </div>
+  {% for tasks in taskGroups %}
+    {% if tasks | length == 0 %}
+      <div class="dimmed light">
+        {{ noTasksMessage | default("NO_TASKS") | translate | safe }}
+      </div>
+    {% else %}
+      <ul class="list">
+        {% for task in tasks %}
+          <li class="task-list-item" data-task-id="{{ task.id }}">
+            <!-- MAIN TASK CONTAINER -->
+            <div class="task-main">
+              <!-- ONCLICK: Shows pop-up and initializes a strict 15-second auto-cancel window -->
+              <button class="close-button small" type="button">
+                <span>
+                  {# <span class="fa fa-square-check"></span>  #}
+                  {% for i in range(0, task.level) %}
+                    <span> _ </span>
+                  {% endfor %}
+                  <span>{{ task.content | truncate(40) }}</span>
+                </span>
+              </button>
+            </div>
 
-        <!-- REPLACEMENT CONFIRMATION CONTAINER -->
-        <div class="task-confirm">
-          <p class="task-confirm-title">Confirm task completion?</p>
-          <p class="bright task-confirm-content">{{ task.content | truncate(50) }}</p>
+            <!-- REPLACEMENT CONFIRMATION CONTAINER -->
+            <div class="task-confirm">
+              <p class="task-confirm-title">Confirm task completion?</p>
+              <p class="bright task-confirm-content">{{ task.content | truncate(50) }}</p>
 
-          <div class="modal-button-wrapper">
-            <!-- CONFIRM BUTTON: Fires submit and clears the active safety timer -->
-            <button type="button" class="button modal-button-confirm">
-              {{ "CONFIRM" | translate }}
-            </button>
+              <div class="modal-button-wrapper">
+                <!-- CONFIRM BUTTON: Fires submit and clears the active safety timer -->
+                <button type="button" class="button modal-button-confirm">
+                  {{ "CONFIRM" | translate }}
+                </button>
 
-            <!-- CANCEL BUTTON: Closes pop-up immediately and clears the safety timer -->
-            <button type="button" class="button modal-button-cancel">
-              {{ "CANCEL" | translate }}
-            </button>
-          </div>
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
+                <!-- CANCEL BUTTON: Closes pop-up immediately and clears the safety timer -->
+                <button type="button" class="button modal-button-cancel">
+                  {{ "CANCEL" | translate }}
+                </button>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endfor %}
 {% endif %}

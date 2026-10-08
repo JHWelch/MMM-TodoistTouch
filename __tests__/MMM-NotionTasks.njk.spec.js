@@ -20,10 +20,10 @@ describe('loaded with tasks', () => {
   beforeEach(() => {
     data = {
       loading: false,
-      tasks: [
+      taskGroups: [[
         { content: 'Task 1' },
         { content: 'Task 2' },
-      ],
+      ]],
     };
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
   });
@@ -34,7 +34,7 @@ describe('loaded with tasks', () => {
   });
 
   it('trim tasks over 50 characters', () => {
-    data.tasks.push({ content: 'This is a very long task that should be trimmed at the 50 character limit' });
+    data.taskGroups[0].push({ content: 'This is a very long task that should be trimmed at the 50 character limit' });
 
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
 
@@ -62,7 +62,7 @@ describe('loaded, no tasks present', () => {
   beforeEach(() => {
     data = {
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
     };
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
   });
