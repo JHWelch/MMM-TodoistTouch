@@ -112,8 +112,7 @@ describe('fetchData', () => {
   beforeEach(() => {
     helper.context = jest.fn((payload) => ({
       api: mockApi,
-      filter: payload.filter,
-      identifier: payload.identifier,
+      ...payload,
     }));
   });
 
@@ -131,7 +130,7 @@ describe('fetchData', () => {
 
     expect(mockApi.getTasks).toHaveBeenCalled();
     expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
-      tasks: mockTasks,
+      tasks: [mockTasks],
       identifier: 'module_1_MMM-TodoistTouch',
     });
   });
@@ -153,9 +152,47 @@ describe('fetchData', () => {
       .toHaveBeenCalledWith({query: 'test-filter'});
     expect(mockSendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
-        tasks: mockTasks,
+        tasks: [mockTasks],
         identifier: 'module_1_MMM-TodoistTouch',
       });
+  });
+
+  describe('tabs', () => {
+    it('will call with each tab if provided', async () => {
+      const mockSendSocketNotification = jest.fn();
+      helper.sendSocketNotification = mockSendSocketNotification;
+
+      const mockTasks0 = [{ id: 1, content: 'Task 1' }];
+      const mockTasks1 = [{ id: 2, content: 'Task 2' }];
+      mockApi.getTasksByFilter.mockResolvedValueOnce({ results: mockTasks0 });
+      mockApi.getTasksByFilter.mockResolvedValueOnce({ results: mockTasks1 });
+
+      await helper.fetchData({
+        api: mockApi,
+        identifier: 'module_1_MMM-TodoistTouch',
+        tabs: [
+          {
+            filter: 'test-filter-1',
+          },
+          {
+            filter: 'test-filter-2',
+          },
+        ],
+      });
+
+      expect(mockApi.getTasksByFilter)
+        .toHaveBeenCalledWith({query: 'test-filter-1'});
+      expect(mockApi.getTasksByFilter)
+        .toHaveBeenCalledWith({query: 'test-filter-2'});
+      expect(mockSendSocketNotification)
+        .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
+          tasks: [
+            mockTasks0,
+            mockTasks1,
+          ],
+          identifier: 'module_1_MMM-TodoistTouch',
+        });
+    });
   });
 });
 
