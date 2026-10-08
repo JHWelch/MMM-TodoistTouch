@@ -319,7 +319,7 @@ describe('getTemplateData', () => {
   it('returns template data when loading', () => {
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: true,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
     });
@@ -330,7 +330,7 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
     });
@@ -342,7 +342,7 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [{ id: 1, content: 'Test task' }],
+      taskGroups: [{ id: 1, content: 'Test task' }],
       noTasksMessage: undefined,
       hasKeyboard: false,
     });
@@ -354,7 +354,7 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: 'No tasks available',
       hasKeyboard: false,
     });
@@ -369,7 +369,7 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       hasKeyboard: true,
     });
   });

@@ -151,7 +151,7 @@ Module.register('MMM-TodoistTouch', {
   getTemplateData () {
     return {
       loading: this.loading,
-      tasks: this.data?.tasks || [],
+      taskGroups: this.data?.tasks || [[]],
       noTasksMessage: this.config.noTasksMessage,
       hasKeyboard: config.modules
         .map(({module}) => module)
