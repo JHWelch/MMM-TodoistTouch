@@ -19,14 +19,14 @@ module.exports = NodeHelper.create({
   },
 
   fetchData (payload) {
-    this.getData(this.context(payload));
+    return this.getDataAndReturn(this.context(payload));
   },
 
   closeTask (payload) {
     const context = this.context(payload);
 
     context.api.closeTask(payload.taskId)
-      .then(() => this.getData(context));
+      .then(() => this.getDataAndReturn(context));
   },
 
   createTask (payload) {
@@ -36,7 +36,7 @@ module.exports = NodeHelper.create({
       content: payload.content,
       ...(payload.addTaskArgs ?? {}),
     })
-      .then(() => this.getData(context));
+      .then(() => this.getDataAndReturn(context));
   },
 
   context ({token, filter, identifier}) {
@@ -47,14 +47,20 @@ module.exports = NodeHelper.create({
     };
   },
 
-  async getData ({api, filter, identifier}) {
+  async getDataAndReturn (context) {
+    const results = await this.getData(context);
+
+    this.sendSocketNotification('MMM-TodoistTouch-DATA', {
+      identifier: context.identifier,
+      tasks: results,
+    });
+  },
+
+  async getData ({api, filter}) {
     const { results } = filter
       ? await api.getTasksByFilter({ query: filter })
       : await api.getTasks();
 
-    this.sendSocketNotification('MMM-TodoistTouch-DATA', {
-      identifier,
-      tasks: results,
-    });
+    return results;
   },
 });
