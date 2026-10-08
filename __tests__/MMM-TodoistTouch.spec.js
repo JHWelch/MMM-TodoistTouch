@@ -106,6 +106,36 @@ describe('getData', () => {
         filter: 'test-filter',
       });
   });
+
+  it('will send tabs if present', () => {
+    MMMTodoistTouch.setConfig({
+      token: 'test-token',
+      tabs: [
+        {
+          filter: 'test-filter-1',
+        },
+        {
+          filter: 'test-filter-2',
+        },
+      ],
+    });
+
+    MMMTodoistTouch.getData();
+
+    expect(MMMTodoistTouch.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', {
+        identifier: MMMTodoistTouch.identifier,
+        token: 'test-token',
+        tabs: [
+          {
+            filter: 'test-filter-1',
+          },
+          {
+            filter: 'test-filter-2',
+          },
+        ],
+      });
+  });
 });
 
 describe('notificationReceived', () => {

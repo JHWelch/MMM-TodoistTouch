@@ -41,6 +41,7 @@ Module.register('MMM-TodoistTouch', {
       ...this.todoistConfig(),
       identifier: this.identifier,
       filter: this.config.filter,
+      tabs: this.config.tabs,
     });
   },
 
