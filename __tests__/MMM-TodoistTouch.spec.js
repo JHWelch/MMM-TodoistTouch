@@ -33,8 +33,9 @@ it('requires expected version', () => {
   expect(MMMTodoistTouch.requiresVersion).toBe('2.28.0');
 });
 
-it('inits module in loading state', () => {
+it('inits module in default state', () => {
   expect(MMMTodoistTouch.loading).toBe(true);
+  expect(MMMTodoistTouch.activeTab).toBe('0');
 });
 
 describe('start', () => {
@@ -275,30 +276,30 @@ describe('swapTab', () => {
   beforeEach(() => {
     tabButton = document.createElement('button');
     tabButton.className = 'tab-button';
-    tabButton.setAttribute('data-tab-id', 'tab1');
+    tabButton.setAttribute('data-tab-id', '1');
   });
 
   it('activates selected tab list and deactivates others', () => {
+    const tab0 = document.createElement('div');
+    tab0.className = 'list';
+    tab0.setAttribute('data-tab-id', '0');
     const tab1 = document.createElement('div');
     tab1.className = 'list';
-    tab1.setAttribute('data-tab-id', 'tab1');
-    const tab2 = document.createElement('div');
-    tab2.className = 'list active';
-    tab2.setAttribute('data-tab-id', 'tab2');
+    tab1.setAttribute('data-tab-id', '1');
 
+    document.body.appendChild(tab0);
     document.body.appendChild(tab1);
-    document.body.appendChild(tab2);
 
     MMMTodoistTouch.swapTab({ currentTarget: tabButton });
 
+    expect(tab0.classList.contains('active')).toBe(false);
     expect(tab1.classList.contains('active')).toBe(true);
-    expect(tab2.classList.contains('active')).toBe(false);
   });
 
   it('activates selected tab button and deactivates others', () => {
     const otherTabButton = document.createElement('button');
     otherTabButton.className = 'tab-button active';
-    otherTabButton.setAttribute('data-tab-id', 'tab2');
+    otherTabButton.setAttribute('data-tab-id', '0');
 
     document.body.appendChild(tabButton);
     document.body.appendChild(otherTabButton);
@@ -307,6 +308,12 @@ describe('swapTab', () => {
 
     expect(tabButton.classList.contains('active')).toBe(true);
     expect(otherTabButton.classList.contains('active')).toBe(false);
+  });
+
+  it('tracks active tab in module', () => {
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(MMMTodoistTouch.activeTab).toBe('1');
   });
 });
 

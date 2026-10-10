@@ -18,6 +18,8 @@ Module.register('MMM-TodoistTouch', {
 
   loading: true,
 
+  activeTab: '0',
+
   start () {
     Log.info(`Starting module: ${this.name}`);
     const self = this;
@@ -109,6 +111,8 @@ Module.register('MMM-TodoistTouch', {
     const tabId = e.currentTarget.getAttribute('data-tab-id');
     const lists = document.querySelectorAll('.list');
     const buttons = document.querySelectorAll('.tab-button');
+
+    this.activeTab = tabId;
 
     lists.forEach(list => {
       if (list.getAttribute('data-tab-id') === tabId) {
