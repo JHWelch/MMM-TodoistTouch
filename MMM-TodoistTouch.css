@@ -116,3 +116,8 @@
   font-size: 0.9em;
   padding: 4px 6px;
 }
+
+.MMM-TodoistTouch .tab-button.active {
+  border-color: var(--color-text-bright);
+  color: var(--color-text-bright);
+}
