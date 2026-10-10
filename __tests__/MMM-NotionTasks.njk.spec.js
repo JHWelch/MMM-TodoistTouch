@@ -63,6 +63,7 @@ describe('loaded with tabs of tasks', () => {
     data = {
       loading: false,
       tabs: ['Tab 1', 'Tab 2'],
+      activeTab: '0',
       taskGroups: [
         [
           { content: 'Task 1' },
@@ -113,6 +114,22 @@ describe('loaded with tabs of tasks', () => {
 
     expect(template).toContain('Tab 1');
     expect(template).toContain('Tab 2');
+  });
+
+  it('shows the first tab as active', () => {
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('class="list active" data-tab-id="0"');
+    expect(template).toContain('class="list" data-tab-id="1"');
+  });
+
+  it('can show the second tab as active', () => {
+    data.activeTab = '1';
+
+    template = nunjucks.render('MMM-TodoistTouch.njk', data);
+
+    expect(template).toContain('class="list" data-tab-id="0"');
+    expect(template).toContain('class="list active" data-tab-id="1"');
   });
 });
 
