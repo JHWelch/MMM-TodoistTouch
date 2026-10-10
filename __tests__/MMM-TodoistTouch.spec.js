@@ -33,8 +33,9 @@ it('requires expected version', () => {
   expect(MMMTodoistTouch.requiresVersion).toBe('2.28.0');
 });
 
-it('inits module in loading state', () => {
+it('inits module in default state', () => {
   expect(MMMTodoistTouch.loading).toBe(true);
+  expect(MMMTodoistTouch.activeTab).toBe('0');
 });
 
 describe('start', () => {
@@ -106,6 +107,36 @@ describe('getData', () => {
         filter: 'test-filter',
       });
   });
+
+  it('will send tabs if present', () => {
+    MMMTodoistTouch.setConfig({
+      token: 'test-token',
+      tabs: [
+        {
+          filter: 'test-filter-1',
+        },
+        {
+          filter: 'test-filter-2',
+        },
+      ],
+    });
+
+    MMMTodoistTouch.getData();
+
+    expect(MMMTodoistTouch.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-FETCH', {
+        identifier: MMMTodoistTouch.identifier,
+        token: 'test-token',
+        tabs: [
+          {
+            filter: 'test-filter-1',
+          },
+          {
+            filter: 'test-filter-2',
+          },
+        ],
+      });
+  });
 });
 
 describe('notificationReceived', () => {
@@ -172,6 +203,10 @@ describe('notificationReceived', () => {
 });
 
 describe('bindTouchEvents', () => {
+  beforeEach(() => {
+    document.body.className = 'MMM-TodoistTouch'; // Needed for targeting
+  });
+
   it('binds touch events for close button', () => {
     const mockCloseButton = document.createElement('button');
     mockCloseButton.className = 'close-button';
@@ -239,6 +274,53 @@ describe('bindTouchEvent', () => {
   });
 });
 
+describe('swapTab', () => {
+  let tabButton;
+
+  beforeEach(() => {
+    tabButton = document.createElement('button');
+    tabButton.className = 'tab-button';
+    tabButton.setAttribute('data-tab-id', '1');
+  });
+
+  it('activates selected tab list and deactivates others', () => {
+    const tab0 = document.createElement('div');
+    tab0.className = 'list';
+    tab0.setAttribute('data-tab-id', '0');
+    const tab1 = document.createElement('div');
+    tab1.className = 'list';
+    tab1.setAttribute('data-tab-id', '1');
+
+    document.body.appendChild(tab0);
+    document.body.appendChild(tab1);
+
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(tab0.classList.contains('active')).toBe(false);
+    expect(tab1.classList.contains('active')).toBe(true);
+  });
+
+  it('activates selected tab button and deactivates others', () => {
+    const otherTabButton = document.createElement('button');
+    otherTabButton.className = 'tab-button active';
+    otherTabButton.setAttribute('data-tab-id', '0');
+
+    document.body.appendChild(tabButton);
+    document.body.appendChild(otherTabButton);
+
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(tabButton.classList.contains('active')).toBe(true);
+    expect(otherTabButton.classList.contains('active')).toBe(false);
+  });
+
+  it('tracks active tab in module', () => {
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(MMMTodoistTouch.activeTab).toBe('1');
+  });
+});
+
 describe('confirmCloseTask', () => {
   it('dispatches close task event to node_helper and hides the confirm modal', () => {
     const taskConfirm = document.createElement('div');
@@ -286,12 +368,17 @@ describe('getTemplate', () => {
 });
 
 describe('getTemplateData', () => {
+  afterEach(() => {
+    global.config.modules = [];
+  });
+
   it('returns template data when loading', () => {
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: true,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -300,9 +387,10 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -312,9 +400,10 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [{ id: 1, content: 'Test task' }],
+      taskGroups: [{ id: 1, content: 'Test task' }],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -324,11 +413,11 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       noTasksMessage: 'No tasks available',
       hasKeyboard: false,
+      activeTab: '0',
     });
-
   });
 
   it('toggles hasKeyboard if MMM-Keyboard is loaded', () => {
@@ -339,8 +428,52 @@ describe('getTemplateData', () => {
 
     expect(MMMTodoistTouch.getTemplateData()).toEqual({
       loading: false,
-      tasks: [],
+      taskGroups: [[]],
       hasKeyboard: true,
+      activeTab: '0',
+    });
+  });
+
+  it('can populate data for tabs', () => {
+    MMMTodoistTouch.loading = false;
+    MMMTodoistTouch.data.tasks = [
+      { id: 1, content: 'Test task1' },
+      { id: 2, content: 'Test task2' },
+    ];
+    MMMTodoistTouch.config.tabs = [
+      {
+        name: 'Tab 1',
+        filter: 'test-filter-1',
+      },
+      {
+        name: 'Tab 2',
+        filter: 'test-filter-2',
+      },
+    ];
+
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
+      loading: false,
+      taskGroups: [
+        { id: 1, content: 'Test task1' },
+        { id: 2, content: 'Test task2' },
+      ],
+      tabs: [
+        'Tab 1',
+        'Tab 2',
+      ],
+      hasKeyboard: false,
+      activeTab: '0',
+    });
+  });
+
+  it('passes activeTab', () => {
+    MMMTodoistTouch.activeTab = '1';
+
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
+      loading: true,
+      taskGroups: [[]],
+      hasKeyboard: false,
+      activeTab: '1',
     });
   });
 });
@@ -359,7 +492,7 @@ describe('socketNotificationReceived', () => {
 
   beforeEach(() => {
     payload = {
-      tasks: [{ id: 1, content: 'Test task' }],
+      tasks: [[{ id: 1, content: 'Test task' }]],
       identifier: MMMTodoistTouch.identifier,
     };
   });
@@ -384,9 +517,27 @@ describe('socketNotificationReceived', () => {
   });
 
   it('updates loading state and data on expected notification', () => {
+    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+
     MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+  });
+
+  it('can load data back from tabs', () => {
+    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    payload.tasks = [
+      [{ id: 1, content: 'Test task 1' }],
+      [{ id: 2, content: 'Test task 2' }],
+    ];
+
+    MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
+
+    expect(MMMTodoistTouch.loading).toBe(false);
+    expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[1]);
   });
 });

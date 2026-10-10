@@ -108,6 +108,94 @@ describe('socketNotificationReceived', () => {
   });
 });
 
+describe('fetchData', () => {
+  beforeEach(() => {
+    helper.context = jest.fn((payload) => ({
+      api: mockApi,
+      ...payload,
+    }));
+  });
+
+  it('should call the API and send socket notification with tasks', async () => {
+    const mockSendSocketNotification = jest.fn();
+    helper.sendSocketNotification = mockSendSocketNotification;
+
+    const mockTasks = [{ id: 1, content: 'Task 1' }, { id: 2, content: 'Task 2' }];
+    mockApi.getTasks.mockResolvedValue({ results: mockTasks });
+
+    await helper.fetchData({
+      token: 'test-token',
+      identifier: 'module_1_MMM-TodoistTouch',
+    });
+
+    expect(mockApi.getTasks).toHaveBeenCalled();
+    expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
+      tasks: [mockTasks],
+      identifier: 'module_1_MMM-TodoistTouch',
+    });
+  });
+
+  it('should call filter endpoint if filter is provided', async () => {
+    const mockSendSocketNotification = jest.fn();
+    helper.sendSocketNotification = mockSendSocketNotification;
+
+    const mockTasks = [{ id: 1, content: 'Task 1' }];
+    mockApi.getTasksByFilter.mockResolvedValue({ results: mockTasks });
+
+    await helper.fetchData({
+      api: mockApi,
+      filter: 'test-filter',
+      identifier: 'module_1_MMM-TodoistTouch',
+    });
+
+    expect(mockApi.getTasksByFilter)
+      .toHaveBeenCalledWith({query: 'test-filter'});
+    expect(mockSendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
+        tasks: [mockTasks],
+        identifier: 'module_1_MMM-TodoistTouch',
+      });
+  });
+
+  describe('tabs', () => {
+    it('will call with each tab if provided', async () => {
+      const mockSendSocketNotification = jest.fn();
+      helper.sendSocketNotification = mockSendSocketNotification;
+
+      const mockTasks0 = [{ id: 1, content: 'Task 1' }];
+      const mockTasks1 = [{ id: 2, content: 'Task 2' }];
+      mockApi.getTasksByFilter.mockResolvedValueOnce({ results: mockTasks0 });
+      mockApi.getTasksByFilter.mockResolvedValueOnce({ results: mockTasks1 });
+
+      await helper.fetchData({
+        api: mockApi,
+        identifier: 'module_1_MMM-TodoistTouch',
+        tabs: [
+          {
+            filter: 'test-filter-1',
+          },
+          {
+            filter: 'test-filter-2',
+          },
+        ],
+      });
+
+      expect(mockApi.getTasksByFilter)
+        .toHaveBeenCalledWith({query: 'test-filter-1'});
+      expect(mockApi.getTasksByFilter)
+        .toHaveBeenCalledWith({query: 'test-filter-2'});
+      expect(mockSendSocketNotification)
+        .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
+          tasks: [
+            mockTasks0,
+            mockTasks1,
+          ],
+          identifier: 'module_1_MMM-TodoistTouch',
+        });
+    });
+  });
+});
+
 describe('getData', () => {
   it('should call the API and send socket notification with tasks', async () => {
     const mockSendSocketNotification = jest.fn();
@@ -122,10 +210,7 @@ describe('getData', () => {
     });
 
     expect(mockApi.getTasks).toHaveBeenCalled();
-    expect(mockSendSocketNotification).toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
-      tasks: mockTasks,
-      identifier: 'module_1_MMM-TodoistTouch',
-    });
+    expect(mockSendSocketNotification).not.toHaveBeenCalled();
   });
 
   it('should call filter endpoint if filter is provided', async () => {
@@ -143,10 +228,6 @@ describe('getData', () => {
 
     expect(mockApi.getTasksByFilter)
       .toHaveBeenCalledWith({query: 'test-filter'});
-    expect(mockSendSocketNotification)
-      .toHaveBeenCalledWith('MMM-TodoistTouch-DATA', {
-        tasks: mockTasks,
-        identifier: 'module_1_MMM-TodoistTouch',
-      });
+    expect(mockSendSocketNotification).not.toHaveBeenCalled();
   });
 });

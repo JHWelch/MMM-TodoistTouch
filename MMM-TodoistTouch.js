@@ -18,6 +18,8 @@ Module.register('MMM-TodoistTouch', {
 
   loading: true,
 
+  activeTab: '0',
+
   start () {
     Log.info(`Starting module: ${this.name}`);
     const self = this;
@@ -41,6 +43,7 @@ Module.register('MMM-TodoistTouch', {
       ...this.todoistConfig(),
       identifier: this.identifier,
       filter: this.config.filter,
+      tabs: this.config.tabs,
     });
   },
 
@@ -63,6 +66,7 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
+    this.bindTouchEvent('.tab-button', this.swapTab);
   },
 
   openModal (e) {
@@ -100,6 +104,30 @@ Module.register('MMM-TodoistTouch', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
+    });
+  },
+
+  swapTab (e) {
+    const tabId = e.currentTarget.getAttribute('data-tab-id');
+    const lists = document.querySelectorAll('.MMM-TodoistTouch .list');
+    const buttons = document.querySelectorAll('.MMM-TodoistTouch .tab-button');
+
+    this.activeTab = tabId;
+
+    lists.forEach(list => {
+      if (list.getAttribute('data-tab-id') === tabId) {
+        list.classList.add('active');
+      } else {
+        list.classList.remove('active');
+      }
+    });
+
+    buttons.forEach(button => {
+      if (button.getAttribute('data-tab-id') === tabId) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
     });
   },
 
@@ -150,7 +178,9 @@ Module.register('MMM-TodoistTouch', {
   getTemplateData () {
     return {
       loading: this.loading,
-      tasks: this.data?.tasks || [],
+      activeTab: this.activeTab,
+      taskGroups: this.data?.tasks || [[]],
+      tabs: this.config.tabs?.map(tab => tab.name),
       noTasksMessage: this.config.noTasksMessage,
       hasKeyboard: config.modules
         .map(({module}) => module)
@@ -182,7 +212,7 @@ Module.register('MMM-TodoistTouch', {
 
     this.loading = false;
     this.data.tasks = payload.tasks;
-    this.addTaskLevels(this.data.tasks);
+    this.data.tasks.forEach(task => this.addTaskLevels(task));
 
     this.updateDom(300);
   },
@@ -192,7 +222,7 @@ Module.register('MMM-TodoistTouch', {
   ////////////////////////
 
   bindTouchEvent (className, callback) {
-    const elements = document.querySelectorAll(className);
+    const elements = document.querySelectorAll('.MMM-TodoistTouch ' + className);
     if (!elements || !elements.length) return;
 
     callback = callback.bind(this);
