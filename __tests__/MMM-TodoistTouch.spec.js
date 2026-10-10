@@ -203,6 +203,10 @@ describe('notificationReceived', () => {
 });
 
 describe('bindTouchEvents', () => {
+  beforeEach(() => {
+    document.body.className = 'MMM-TodoistTouch'; // Needed for targeting
+  });
+
   it('binds touch events for close button', () => {
     const mockCloseButton = document.createElement('button');
     mockCloseButton.className = 'close-button';

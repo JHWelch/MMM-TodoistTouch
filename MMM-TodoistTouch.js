@@ -109,8 +109,8 @@ Module.register('MMM-TodoistTouch', {
 
   swapTab (e) {
     const tabId = e.currentTarget.getAttribute('data-tab-id');
-    const lists = document.querySelectorAll('.list');
-    const buttons = document.querySelectorAll('.tab-button');
+    const lists = document.querySelectorAll('.MMM-TodoistTouch .list');
+    const buttons = document.querySelectorAll('.MMM-TodoistTouch .tab-button');
 
     this.activeTab = tabId;
 
@@ -222,7 +222,7 @@ Module.register('MMM-TodoistTouch', {
   ////////////////////////
 
   bindTouchEvent (className, callback) {
-    const elements = document.querySelectorAll(className);
+    const elements = document.querySelectorAll('.MMM-TodoistTouch ' + className);
     if (!elements || !elements.length) return;
 
     callback = callback.bind(this);
