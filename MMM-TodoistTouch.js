@@ -178,6 +178,7 @@ Module.register('MMM-TodoistTouch', {
   getTemplateData () {
     return {
       loading: this.loading,
+      activeTab: this.activeTab,
       taskGroups: this.data?.tasks || [[]],
       tabs: this.config.tabs?.map(tab => tab.name),
       noTasksMessage: this.config.noTasksMessage,

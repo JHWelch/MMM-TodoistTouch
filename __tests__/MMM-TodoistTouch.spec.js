@@ -374,6 +374,7 @@ describe('getTemplateData', () => {
       taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -385,6 +386,7 @@ describe('getTemplateData', () => {
       taskGroups: [[]],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -397,6 +399,7 @@ describe('getTemplateData', () => {
       taskGroups: [{ id: 1, content: 'Test task' }],
       noTasksMessage: undefined,
       hasKeyboard: false,
+      activeTab: '0',
     });
   });
 
@@ -409,8 +412,8 @@ describe('getTemplateData', () => {
       taskGroups: [[]],
       noTasksMessage: 'No tasks available',
       hasKeyboard: false,
+      activeTab: '0',
     });
-
   });
 
   it('toggles hasKeyboard if MMM-Keyboard is loaded', () => {
@@ -423,6 +426,7 @@ describe('getTemplateData', () => {
       loading: false,
       taskGroups: [[]],
       hasKeyboard: true,
+      activeTab: '0',
     });
   });
 
@@ -454,6 +458,18 @@ describe('getTemplateData', () => {
         'Tab 2',
       ],
       hasKeyboard: false,
+      activeTab: '0',
+    });
+  });
+
+  it('passes activeTab', () => {
+    MMMTodoistTouch.activeTab = '1';
+
+    expect(MMMTodoistTouch.getTemplateData()).toEqual({
+      loading: true,
+      taskGroups: [[]],
+      hasKeyboard: false,
+      activeTab: '1',
     });
   });
 });
