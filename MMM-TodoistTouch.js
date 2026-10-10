@@ -64,6 +64,7 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
+    this.bindTouchEvent('.tab-button', this.swapTab);
   },
 
   openModal (e) {
@@ -101,6 +102,28 @@ Module.register('MMM-TodoistTouch', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
+    });
+  },
+
+  swapTab (e) {
+    const tabId = e.currentTarget.getAttribute('data-tab-id');
+    const lists = document.querySelectorAll('.list');
+    const buttons = document.querySelectorAll('.tab-button');
+
+    lists.forEach(list => {
+      if (list.getAttribute('data-tab-id') === tabId) {
+        list.classList.add('active');
+      } else {
+        list.classList.remove('active');
+      }
+    });
+
+    buttons.forEach(button => {
+      if (button.getAttribute('data-tab-id') === tabId) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
     });
   },
 

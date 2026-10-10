@@ -269,6 +269,47 @@ describe('bindTouchEvent', () => {
   });
 });
 
+describe('swapTab', () => {
+  let tabButton;
+
+  beforeEach(() => {
+    tabButton = document.createElement('button');
+    tabButton.className = 'tab-button';
+    tabButton.setAttribute('data-tab-id', 'tab1');
+  });
+
+  it('activates selected tab list and deactivates others', () => {
+    const tab1 = document.createElement('div');
+    tab1.className = 'list';
+    tab1.setAttribute('data-tab-id', 'tab1');
+    const tab2 = document.createElement('div');
+    tab2.className = 'list active';
+    tab2.setAttribute('data-tab-id', 'tab2');
+
+    document.body.appendChild(tab1);
+    document.body.appendChild(tab2);
+
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(tab1.classList.contains('active')).toBe(true);
+    expect(tab2.classList.contains('active')).toBe(false);
+  });
+
+  it('activates selected tab button and deactivates others', () => {
+    const otherTabButton = document.createElement('button');
+    otherTabButton.className = 'tab-button active';
+    otherTabButton.setAttribute('data-tab-id', 'tab2');
+
+    document.body.appendChild(tabButton);
+    document.body.appendChild(otherTabButton);
+
+    MMMTodoistTouch.swapTab({ currentTarget: tabButton });
+
+    expect(tabButton.classList.contains('active')).toBe(true);
+    expect(otherTabButton.classList.contains('active')).toBe(false);
+  });
+});
+
 describe('confirmCloseTask', () => {
   it('dispatches close task event to node_helper and hides the confirm modal', () => {
     const taskConfirm = document.createElement('div');
