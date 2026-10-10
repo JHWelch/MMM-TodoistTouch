@@ -14,7 +14,7 @@
   {% if tabs %}
     <div class="tabs">
       {% for tab in tabs %}
-        <button class="tab-button {% if loop.first %}active{% endif %}" data-tab-id="{{ loop.index0 }}">
+        <button class="tab-button{% if loop.index0 == activeTab %} active{% endif %}" data-tab-id="{{ loop.index0 }}">
           {{ tab }}
         </button>
       {% endfor %}

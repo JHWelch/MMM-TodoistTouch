@@ -116,20 +116,24 @@ describe('loaded with tabs of tasks', () => {
     expect(template).toContain('Tab 2');
   });
 
-  it('shows the first tab as active', () => {
+  it('shows the first tab and button as active', () => {
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
 
     expect(template).toContain('class="list active" data-tab-id="0"');
     expect(template).toContain('class="list" data-tab-id="1"');
+    expect(template).toContain('class="tab-button active" data-tab-id="0"');
+    expect(template).toContain('class="tab-button" data-tab-id="1"');
   });
 
-  it('can show the second tab as active', () => {
+  it('can show the second tab and button as active', () => {
     data.activeTab = '1';
 
     template = nunjucks.render('MMM-TodoistTouch.njk', data);
 
     expect(template).toContain('class="list" data-tab-id="0"');
     expect(template).toContain('class="list active" data-tab-id="1"');
+    expect(template).toContain('class="tab-button" data-tab-id="0"');
+    expect(template).toContain('class="tab-button active" data-tab-id="1"');
   });
 });
 
