@@ -50,7 +50,7 @@ module.exports = NodeHelper.create({
 
   async getDataAndReturn (context) {
     const tabs = context.tabs || [{ filter: context.filter }];
-    const results = await Promise.all(tabs.map(tab => this.getData({
+    const results = await Promise.all(tabs.map(tab => this.getTasks({
       api: context.api,
       filter: tab.filter,
     })));
@@ -61,7 +61,7 @@ module.exports = NodeHelper.create({
     });
   },
 
-  async getData ({api, filter}) {
+  async getTasks ({api, filter}) {
     const { results } = filter
       ? await api.getTasksByFilter({ query: filter })
       : await api.getTasks();
