@@ -31,15 +31,6 @@ Module.register('MMM-TodoistTouch', {
     }, this.config.updateInterval);
   },
 
-  commonPayload () {
-    return {
-      identifier: this.identifier,
-      token: this.config.token,
-      filter: this.config.filter,
-      tabs: this.config.tabs,
-    };
-  },
-
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', this.commonPayload());
   },
@@ -217,6 +208,15 @@ Module.register('MMM-TodoistTouch', {
   ////////////////////////
   // Helpers
   ////////////////////////
+
+  commonPayload () {
+    return {
+      identifier: this.identifier,
+      token: this.config.token,
+      filter: this.config.filter,
+      tabs: this.config.tabs,
+    };
+  },
 
   bindTouchEvent (className, callback) {
     const elements = document.querySelectorAll('.MMM-TodoistTouch ' + className);
