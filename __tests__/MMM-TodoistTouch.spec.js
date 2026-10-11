@@ -258,21 +258,44 @@ describe('bindTouchEvents', () => {
   });
 });
 
-describe('bindTouchEvent', () => {
-  it('binds touchend and click events to elements with the given class', () => {
-    const mockElement = document.createElement('div');
-    mockElement.className = 'test-class';
-    document.body.appendChild(mockElement);
+describe('confirmCloseTask', () => {
+  it('dispatches close task event to node_helper and hides the confirm modal', () => {
+    const taskConfirm = document.createElement('div');
+    taskConfirm.className = 'task-confirm';
+    const triggerButton = document.createElement('button');
+    const li = document.createElement('li');
+    li.setAttribute('data-task-id', '123');
+    li.appendChild(taskConfirm);
+    li.appendChild(triggerButton);
+    document.body.appendChild(li);
+    const mockEvent = { currentTarget: triggerButton };
+    MMMTodoistTouch.sendSocketNotification = jest.fn();
 
-    const callback = jest.fn();
-    MMMTodoistTouch.bindTouchEvent('.test-class', callback);
+    MMMTodoistTouch.confirmCloseTask(mockEvent, MMMTodoistTouch);
 
-    mockElement.dispatchEvent(new Event('touchend'));
-    mockElement.dispatchEvent(new Event('click'));
+    expect(MMMTodoistTouch.sendSocketNotification)
+      .toHaveBeenCalledWith('MMM-TodoistTouch-CLOSE-TASK', {
+        identifier: MMMTodoistTouch.identifier,
+        token: MMMTodoistTouch.config.token,
+        taskId: '123',
+      });
+    expect(taskConfirm.style.display).toBe('none');
 
-    expect(callback).toHaveBeenCalledTimes(2);
+    document.body.removeChild(li);
+  });
+});
 
-    document.body.removeChild(mockElement);
+describe('openKeyboardForAdd', () => {
+  it('sends keyboard notification', () => {
+    MMMTodoistTouch.sendNotification = jest.fn();
+
+    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
+
+    expect(MMMTodoistTouch.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
+      key: 'TODOIST_ADD_TASK',
+      style: 'default',
+      sendLabel: 'Add Task',
+    });
   });
 });
 
@@ -320,47 +343,6 @@ describe('swapTab', () => {
     MMMTodoistTouch.swapTab({ currentTarget: tabButton });
 
     expect(MMMTodoistTouch.activeTab).toBe('1');
-  });
-});
-
-describe('confirmCloseTask', () => {
-  it('dispatches close task event to node_helper and hides the confirm modal', () => {
-    const taskConfirm = document.createElement('div');
-    taskConfirm.className = 'task-confirm';
-    const triggerButton = document.createElement('button');
-    const li = document.createElement('li');
-    li.setAttribute('data-task-id', '123');
-    li.appendChild(taskConfirm);
-    li.appendChild(triggerButton);
-    document.body.appendChild(li);
-    const mockEvent = { currentTarget: triggerButton };
-    MMMTodoistTouch.sendSocketNotification = jest.fn();
-
-    MMMTodoistTouch.confirmCloseTask(mockEvent, MMMTodoistTouch);
-
-    expect(MMMTodoistTouch.sendSocketNotification)
-      .toHaveBeenCalledWith('MMM-TodoistTouch-CLOSE-TASK', {
-        identifier: MMMTodoistTouch.identifier,
-        token: MMMTodoistTouch.config.token,
-        taskId: '123',
-      });
-    expect(taskConfirm.style.display).toBe('none');
-
-    document.body.removeChild(li);
-  });
-});
-
-describe('openKeyboardForAdd', () => {
-  it('sends keyboard notification', () => {
-    MMMTodoistTouch.sendNotification = jest.fn();
-
-    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
-
-    expect(MMMTodoistTouch.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
-      key: 'TODOIST_ADD_TASK',
-      style: 'default',
-      sendLabel: 'Add Task',
-    });
   });
 });
 
@@ -542,5 +524,23 @@ describe('socketNotificationReceived', () => {
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
     expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
     expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[1]);
+  });
+});
+
+describe('bindTouchEvent', () => {
+  it('binds touchend and click events to elements with the given class', () => {
+    const mockElement = document.createElement('div');
+    mockElement.className = 'test-class';
+    document.body.appendChild(mockElement);
+
+    const callback = jest.fn();
+    MMMTodoistTouch.bindTouchEvent('.test-class', callback);
+
+    mockElement.dispatchEvent(new Event('touchend'));
+    mockElement.dispatchEvent(new Event('click'));
+
+    expect(callback).toHaveBeenCalledTimes(2);
+
+    document.body.removeChild(mockElement);
   });
 });
