@@ -52,6 +52,31 @@ Use either the "test token" provided there, or go through an Oauth flow to get a
 | `filter`         | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter) |
 | `noTasksMessage` | *Optional*   | Message to display when there are no tasks. <br>Default `NO_TASKS` (see translation strings)                                                                 |
 | `addTaskArgs`    | *Optional*   | Additional task data to pass when creating a new task. [See full list of args](node_modules/@doist/todoist-sdk/dist/types/types/tasks/requests.d.ts)         |
+| `tabs`           | *Optional*   | Allows for multiple tabs of tasks. See [the Tabs Config](#tabs-config) section below for more information                                                    |
+
+#### Tabs Config
+
+Specify a number of different tabs, each with their own filter. Requires a touch screen for use.
+
+```js
+{
+  tabs: [
+    {
+      name: 'Family',
+      filter: '#Family',
+    },
+    {
+      name: 'Jordan',
+      filter: '#Personal',
+    },
+  ],
+}
+```
+
+| Option   | Required?    | Description                                                                                                                    |
+| -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `name`   | **Required** | The title of tab. Text shown on the tab button                                                                                 |
+| `filter` | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
 
 ## Update
 
