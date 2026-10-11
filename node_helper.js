@@ -19,14 +19,14 @@ module.exports = NodeHelper.create({
   },
 
   fetchData (payload) {
-    this.getData(this.context(payload));
+    return this.getDataAndReturn(this.context(payload));
   },
 
   closeTask (payload) {
     const context = this.context(payload);
 
     context.api.closeTask(payload.taskId)
-      .then(() => this.getData(context));
+      .then(() => this.getDataAndReturn(context));
   },
 
   createTask (payload) {
@@ -36,25 +36,36 @@ module.exports = NodeHelper.create({
       content: payload.content,
       ...(payload.addTaskArgs ?? {}),
     })
-      .then(() => this.getData(context));
+      .then(() => this.getDataAndReturn(context));
   },
 
-  context ({token, filter, identifier}) {
+  context ({token, filter, identifier, tabs}) {
     return {
       identifier,
-      api: new TodoistApi(token),
       filter,
+      tabs,
+      api: new TodoistApi(token),
     };
   },
 
-  async getData ({api, filter, identifier}) {
+  async getDataAndReturn (context) {
+    const tabs = context.tabs || [{ filter: context.filter }];
+    const results = await Promise.all(tabs.map(tab => this.getData({
+      api: context.api,
+      filter: tab.filter,
+    })));
+
+    this.sendSocketNotification('MMM-TodoistTouch-DATA', {
+      identifier: context.identifier,
+      tasks: results,
+    });
+  },
+
+  async getData ({api, filter}) {
     const { results } = filter
       ? await api.getTasksByFilter({ query: filter })
       : await api.getTasks();
 
-    this.sendSocketNotification('MMM-TodoistTouch-DATA', {
-      identifier,
-      tasks: results,
-    });
+    return results;
   },
 });
