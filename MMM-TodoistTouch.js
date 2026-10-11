@@ -31,20 +31,17 @@ Module.register('MMM-TodoistTouch', {
     }, this.config.updateInterval);
   },
 
-  todoistConfig () {
+  commonPayload () {
     return {
+      identifier: this.identifier,
       token: this.config.token,
       filter: this.config.filter,
+      tabs: this.config.tabs,
     };
   },
 
   getData () {
-    this.sendSocketNotification('MMM-TodoistTouch-FETCH', {
-      ...this.todoistConfig(),
-      identifier: this.identifier,
-      filter: this.config.filter,
-      tabs: this.config.tabs,
-    });
+    this.sendSocketNotification('MMM-TodoistTouch-FETCH', this.commonPayload());
   },
 
   // 1. Bind touch events every time the template renders on screen
@@ -53,7 +50,7 @@ Module.register('MMM-TodoistTouch', {
       this.bindTouchEvents();
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
-        ...this.todoistConfig(),
+        ...this.commonPayload(),
         content: payload.message,
         addTaskArgs: this.config.addTaskArgs,
       });
@@ -85,7 +82,7 @@ Module.register('MMM-TodoistTouch', {
   confirmCloseTask (e) {
     const { taskId } = this.taskDetails(e);
     this.sendSocketNotification('MMM-TodoistTouch-CLOSE-TASK', {
-      ...this.todoistConfig(),
+      ...this.commonPayload(),
       taskId: taskId,
     });
     this.cancelCloseTask(e);

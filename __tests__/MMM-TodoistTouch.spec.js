@@ -164,6 +164,7 @@ describe('notificationReceived', () => {
 
       expect(MMMTodoistTouch.sendSocketNotification)
         .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+          identifier: MMMTodoistTouch.identifier,
           token: MMMTodoistTouch.config.token,
           addTaskArgs: {},
           content: payload.message,
@@ -182,6 +183,7 @@ describe('notificationReceived', () => {
 
       expect(MMMTodoistTouch.sendSocketNotification)
         .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+          identifier: MMMTodoistTouch.identifier,
           token: MMMTodoistTouch.config.token,
           content: payload.message,
           addTaskArgs: {
@@ -338,6 +340,7 @@ describe('confirmCloseTask', () => {
 
     expect(MMMTodoistTouch.sendSocketNotification)
       .toHaveBeenCalledWith('MMM-TodoistTouch-CLOSE-TASK', {
+        identifier: MMMTodoistTouch.identifier,
         token: MMMTodoistTouch.config.token,
         taskId: '123',
       });
