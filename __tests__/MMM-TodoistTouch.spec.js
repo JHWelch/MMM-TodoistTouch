@@ -184,9 +184,19 @@ describe('handleAutoTab', () => {
     });
 
     it('resets the active tab to 0', () => {
+      MMMTodoistTouch.activeTab = '1';
+
       MMMTodoistTouch.handleAutoTab();
 
       expect(MMMTodoistTouch.swapTab).toHaveBeenCalledWith('0');
+    });
+
+    it('does not try and swap if already home', () => {
+      MMMTodoistTouch.activeTab = '0';
+
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).not.toHaveBeenCalled();
     });
   });
 
