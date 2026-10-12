@@ -340,6 +340,44 @@ describe('bindTouchEvents', () => {
   });
 });
 
+describe('openModal', () => {
+  let openModalButton;
+  let li;
+  let taskConfirmModal;
+  let mockEvent;
+
+  beforeEach(() => {
+    openModalButton = document.createElement('button');
+    openModalButton.className = 'close-button';
+    taskConfirmModal = document.createElement('div');
+    taskConfirmModal.className = 'task-confirm';
+    taskConfirmModal.style.display = 'none';
+    li = document.createElement('li');
+    li.setAttribute('data-task-id', '123');
+    li.appendChild(openModalButton);
+    li.appendChild(taskConfirmModal);
+    document.body.appendChild(li);
+    mockEvent = { currentTarget: openModalButton };
+  });
+
+  afterEach(() => {
+    document.body.removeChild(li);
+  });
+
+  it('opens the close modal', () => {
+    MMMTodoistTouch.openModal(mockEvent);
+
+    expect(taskConfirmModal.style.display).toBe('block');
+  });
+
+  it('creates a new task timer', () => {
+    MMMTodoistTouch.openModal(mockEvent);
+
+    expect(typeof window.taskTimers).toBe('object');
+    expect(window.taskTimers['123']).toEqual(expect.any(Number));
+  });
+});
+
 describe('confirmCloseTask', () => {
   it('dispatches close task event to node_helper and hides the confirm modal', () => {
     const taskConfirm = document.createElement('div');
