@@ -45,14 +45,16 @@ Use either the "test token" provided there, or go through an Oauth flow to get a
 
 ### Customizing Config
 
-| Option           | Required?    | Description                                                                                                                                                  |
-| ---------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `token`          | **Required** | Your Todoist API token.                                                                                                                                      |
-| `updateInterval` | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute)                                                                                       |
-| `filter`         | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter) |
-| `noTasksMessage` | *Optional*   | Message to display when there are no tasks. <br>Default `NO_TASKS` (see translation strings)                                                                 |
-| `addTaskArgs`    | *Optional*   | Additional task data to pass when creating a new task. [See full list of args](node_modules/@doist/todoist-sdk/dist/types/types/tasks/requests.d.ts)         |
-| `tabs`           | *Optional*   | Allows for multiple tabs of tasks. See [the Tabs Config](#tabs-config) section below for more information                                                    |
+| Option            | Required?    | Description                                                                                                                                                  |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `token`           | **Required** | Your Todoist API token.                                                                                                                                      |
+| `updateInterval`  | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute)                                                                                       |
+| `filter`          | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter) |
+| `noTasksMessage`  | *Optional*   | Message to display when there are no tasks. <br>Default `NO_TASKS` (see translation strings)                                                                 |
+| `addTaskArgs`     | *Optional*   | Additional task data to pass when creating a new task. [See full list of args](node_modules/@doist/todoist-sdk/dist/types/types/tasks/requests.d.ts)         |
+| `tabs`            | *Optional*   | Allows for multiple tabs of tasks. See [the Tabs Config](#tabs-config) section below for more information                                                    |
+| `autoTabMode`     | *Optional*   | Whether to automatically change tabs. Options are `'return-home'`, `'advance'` or `null`. <br> Default `null` (nothing)                                      |
+| `autoTabInterval` | *Optional*   | The interval after which to perform the `autoTabMode` action. If `autoTabMode` is null, has no affect. <br> Default `10000` milliseconds (10 seconds)        |
 
 #### Tabs Config
 
@@ -77,6 +79,20 @@ Specify a number of different tabs, each with their own filter. Requires a touch
 | -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `name`   | **Required** | The title of tab. Text shown on the tab button                                                                                 |
 | `filter` | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
+
+#### Auto Tab mode
+
+When using tabs, you have the ability to automatically change tabs based on an interval. To set this you will use `autoTabMode` and `autoTabInterval`.
+
+If  `autoTabMode` is set to `null` then `autoTabInterval` has no affect.
+
+##### `'return-home'` Auto Tab Mode
+
+After `autoTabInterval` milliseconds without user interaction, changes tab to the "home" tab. (Index 0)
+
+##### `'advance'` Auto Tab Mode
+
+After `autoTabInterval` milliseconds without user interaction, the active tab will advance to the next tab. So with three tabs, 0 -> 1 -> 2 -> 0 ->...
 
 ## Update
 
