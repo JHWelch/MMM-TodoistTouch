@@ -89,6 +89,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   openModal (e) {
+    this.autoTabPause = true;
     const { element, taskId } = this.taskDetails(e);
     const pop = element.querySelector('.task-confirm');
     pop.style.display = 'block';

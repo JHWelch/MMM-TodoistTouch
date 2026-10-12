@@ -376,6 +376,12 @@ describe('openModal', () => {
     expect(typeof window.taskTimers).toBe('object');
     expect(window.taskTimers['123']).toEqual(expect.any(Number));
   });
+
+  it('will pause the autoTab process', () => {
+    MMMTodoistTouch.openModal(mockEvent);
+
+    expect(MMMTodoistTouch.autoTabPause).toBe(true);
+  });
 });
 
 describe('confirmCloseTask', () => {
