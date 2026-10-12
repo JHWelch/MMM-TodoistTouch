@@ -29,10 +29,20 @@ Module.register('MMM-TodoistTouch', {
     setInterval(() => {
       self.getData();
     }, this.config.updateInterval);
+
+    if (this.config.autoTabMode) {
+      setInterval(() => {
+        self.handleAutoTab();
+      }, this.config.autoTabInterval);
+    }
   },
 
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', this.commonPayload());
+  },
+
+  handleAutoTab () {
+
   },
 
   // 1. Bind touch events every time the template renders on screen

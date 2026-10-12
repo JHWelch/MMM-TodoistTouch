@@ -84,10 +84,30 @@ describe('start', () => {
 
   test('interval set starts with default value', () => {
     MMMTodoistTouch.setConfig({ updateInterval: 100000 });
+
     MMMTodoistTouch.start();
 
+    expect(global.setInterval).toHaveBeenCalledTimes(1);
     expect(global.setInterval)
       .toHaveBeenCalledWith(expect.any(Function), 100000);
+  });
+
+  it('will start auto tab interval if provided', () => {
+    MMMTodoistTouch.config.autoTabMode = 'return-home';
+    MMMTodoistTouch.config.autoTabInterval = 123456;
+    MMMTodoistTouch.handleAutoTab = jest.fn();
+
+    MMMTodoistTouch.start();
+
+    expect(global.setInterval).toHaveBeenCalledTimes(2);
+    expect(global.setInterval)
+      .toHaveBeenCalledWith(expect.any(Function), 60000);
+    expect(global.setInterval)
+      .toHaveBeenCalledWith(expect.any(Function), 123456);
+    global.setInterval.mock.calls[0][0]();
+    global.setInterval.mock.calls[1][0]();
+
+    expect(MMMTodoistTouch.handleAutoTab).toHaveBeenCalled();
   });
 });
 
