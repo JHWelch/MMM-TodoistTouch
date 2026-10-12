@@ -20,6 +20,8 @@ Module.register('MMM-TodoistTouch', {
 
   activeTab: '0',
 
+  autoTabPaused: false,
+
   start () {
     Log.info(`Starting module: ${this.name}`);
     const self = this;
@@ -114,6 +116,7 @@ Module.register('MMM-TodoistTouch', {
       clearTimeout(window.taskTimers[taskId]);
     }
     element.querySelector('.task-confirm').style.display='none';
+    this.autoTabPaused = false;
   },
 
   openKeyboardForAdd () {

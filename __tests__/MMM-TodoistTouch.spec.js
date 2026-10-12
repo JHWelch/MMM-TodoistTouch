@@ -367,6 +367,45 @@ describe('confirmCloseTask', () => {
   });
 });
 
+describe('confirmCloseTask', () => {
+  let taskConfirm;
+  let triggerButton;
+  let li;
+  let mockEvent;
+
+  beforeEach(() => {
+    taskConfirm = document.createElement('div');
+    taskConfirm.className = 'task-confirm';
+    triggerButton = document.createElement('button');
+    li = document.createElement('li');
+    li.setAttribute('data-task-id', '123');
+    li.appendChild(taskConfirm);
+    li.appendChild(triggerButton);
+    document.body.appendChild(li);
+    mockEvent = { currentTarget: triggerButton };
+  });
+
+  afterEach(() => {
+    document.body.removeChild(li);
+
+  });
+
+  it('hides the confirm modal', () => {
+    MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
+
+    expect(taskConfirm.style.display).toBe('none');
+  });
+
+  it('unpauses autoTabPause', () => {
+    MMMTodoistTouch.autoTabPaused = true;
+
+    MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
+
+    expect(taskConfirm.style.display).toBe('none');
+    expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+  });
+});
+
 describe('openKeyboardForAdd', () => {
   it('sends keyboard notification', () => {
     MMMTodoistTouch.sendNotification = jest.fn();
