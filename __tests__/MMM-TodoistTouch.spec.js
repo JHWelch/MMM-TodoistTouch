@@ -160,9 +160,49 @@ describe('getData', () => {
 });
 
 describe('handleAutoTab', () => {
+  beforeEach(() => {
+    MMMTodoistTouch.swapTab = jest.fn();
+    MMMTodoistTouch.config.tabs = [
+      {
+        name: 'Tab 1',
+        filter: 'test-filter-1',
+      },
+      {
+        name: 'Tab 2',
+        filter: 'test-filter-2',
+      },
+      {
+        name: 'Tab 3',
+        filter: 'test-filter-3',
+      },
+    ];
+  });
+
   describe('return-home', () => {
+    beforeEach(() => {
+      MMMTodoistTouch.config.autoTabMode = 'return-home';
+    });
+
     it('resets the active tab to 0', () => {
-      MMMTodoistTouch.swapTab = jest.fn();
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).toHaveBeenCalledWith('0');
+    });
+  });
+
+  describe('advance', () => {
+    beforeEach(() => {
+      MMMTodoistTouch.config.autoTabMode = 'advance';
+    });
+
+    it('sets to the next active tab', () => {
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).toHaveBeenCalledWith('1');
+    });
+
+    it('will wrap if already on the last tab', () => {
+      MMMTodoistTouch.activeTab = '2';
 
       MMMTodoistTouch.handleAutoTab();
 

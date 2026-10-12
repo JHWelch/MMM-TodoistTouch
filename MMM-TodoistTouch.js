@@ -42,7 +42,22 @@ Module.register('MMM-TodoistTouch', {
   },
 
   handleAutoTab () {
-    this.swapTab('0');
+    switch (this.config.autoTabMode) {
+      case 'return-home': {
+        this.swapTab('0');
+        break;
+      }
+      case 'advance': {
+        const totalTabs = (this.config.tabs ?? []).length;
+        const activeTab = parseInt(this.activeTab);
+        const targetTab = activeTab === (totalTabs - 1)
+          ? 0
+          : activeTab + 1;
+
+        this.swapTab(targetTab.toString());
+        break;
+      }
+    }
   },
 
   // 1. Bind touch events every time the template renders on screen
