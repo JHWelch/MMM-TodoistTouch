@@ -159,6 +159,18 @@ describe('getData', () => {
   });
 });
 
+describe('handleAutoTab', () => {
+  describe('return-home', () => {
+    it('resets the active tab to 0', () => {
+      MMMTodoistTouch.swapTab = jest.fn();
+
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).toHaveBeenCalledWith('0');
+    });
+  });
+});
+
 describe('notificationReceived', () => {
   describe('MODULE_DOM_UPDATED', () => {
     it('does nothing if notification is not MODULE_DOM_UPDATED', () => {

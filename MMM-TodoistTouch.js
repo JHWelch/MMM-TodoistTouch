@@ -42,7 +42,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   handleAutoTab () {
-
+    this.swapTab('0');
   },
 
   // 1. Bind touch events every time the template renders on screen
