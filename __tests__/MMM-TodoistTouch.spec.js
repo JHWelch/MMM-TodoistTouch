@@ -364,6 +364,45 @@ describe('swapTab', () => {
 
     expect(MMMTodoistTouch.activeTab).toBe('1');
   });
+
+  describe('called with index', () => {
+    it('activates selected tab list and deactivates others', () => {
+      const tab0 = document.createElement('div');
+      tab0.className = 'list';
+      tab0.setAttribute('data-tab-id', '0');
+      const tab1 = document.createElement('div');
+      tab1.className = 'list';
+      tab1.setAttribute('data-tab-id', '1');
+
+      document.body.appendChild(tab0);
+      document.body.appendChild(tab1);
+
+      MMMTodoistTouch.swapTab('1');
+
+      expect(tab0.classList.contains('active')).toBe(false);
+      expect(tab1.classList.contains('active')).toBe(true);
+    });
+
+    it('activates selected tab button and deactivates others', () => {
+      const otherTabButton = document.createElement('button');
+      otherTabButton.className = 'tab-button active';
+      otherTabButton.setAttribute('data-tab-id', '0');
+
+      document.body.appendChild(tabButton);
+      document.body.appendChild(otherTabButton);
+
+      MMMTodoistTouch.swapTab('1');
+
+      expect(tabButton.classList.contains('active')).toBe(true);
+      expect(otherTabButton.classList.contains('active')).toBe(false);
+    });
+
+    it('tracks active tab in module', () => {
+      MMMTodoistTouch.swapTab('1');
+
+      expect(MMMTodoistTouch.activeTab).toBe('1');
+    });
+  });
 });
 
 describe('getTemplate', () => {

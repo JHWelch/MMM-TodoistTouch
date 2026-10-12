@@ -105,8 +105,10 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
-  swapTab (e) {
-    const tabId = e.currentTarget.getAttribute('data-tab-id');
+  swapTab (eventOrIndex) {
+    const tabId = typeof eventOrIndex ==='object'
+      ? eventOrIndex.currentTarget.getAttribute('data-tab-id')
+      : eventOrIndex;
     const lists = document.querySelectorAll('.MMM-TodoistTouch .list');
     const buttons = document.querySelectorAll('.MMM-TodoistTouch .tab-button');
 
