@@ -291,4 +291,14 @@ Module.register('MMM-TodoistTouch', {
       self.handleAutoTab();
     }, this.config.autoTabInterval);
   },
+
+  pauseAutoTab () {
+    if (!this.autoTabIntervalId) {
+      return;
+    }
+
+    clearInterval(this.autoTabIntervalId);
+
+    this.autoTabIntervalId = null;
+  },
 });

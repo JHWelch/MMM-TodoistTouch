@@ -816,3 +816,35 @@ describe('unpauseAutoTab', () => {
     expect(MMMTodoistTouch.autoTabIntervalId).toBeNull();
   });
 });
+
+describe('pauseAutoTab', () => {
+  const originalClearInterval = clearInterval;
+
+  beforeEach(() => {
+    global.clearInterval = jest.fn();
+  });
+
+  afterEach(() => {
+    global.clearInterval = originalClearInterval;
+  });
+
+  it('stops the existing auto tab interval', () => {
+    MMMTodoistTouch.config.autoTabMode = 'return-home';
+    MMMTodoistTouch.autoTabIntervalId = 666555;
+
+    MMMTodoistTouch.pauseAutoTab();
+
+    expect(global.clearInterval).toHaveBeenCalledWith(666555);
+    expect(MMMTodoistTouch.autoTabIntervalId).toBeNull();
+  });
+
+  it('does nothing if autoTabIntervalId is not set', () => {
+    MMMTodoistTouch.config.autoTabMode = 'return-home';
+    MMMTodoistTouch.autoTabIntervalId = null;
+
+    MMMTodoistTouch.pauseAutoTab();
+
+    expect(global.clearInterval).not.toHaveBeenCalled();
+    expect(MMMTodoistTouch.autoTabIntervalId).toBeNull();
+  });
+});
