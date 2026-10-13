@@ -816,13 +816,23 @@ describe('unpauseAutoTab', () => {
 
   it('will not do anything if autoTabMode is off', () => {
     MMMTodoistTouch.config.autoTabMode = null;
-    MMMTodoistTouch.config.autoTabInterval = 123456;
     MMMTodoistTouch.handleAutoTab = jest.fn();
 
     MMMTodoistTouch.unpauseAutoTab();
 
     expect(global.setInterval).not.toHaveBeenCalled();
     expect(MMMTodoistTouch.autoTabIntervalId).toBeNull();
+  });
+
+  it('will not do anything if interval id is already set', () => {
+    MMMTodoistTouch.config.autoTabMode = 'return-home';
+    MMMTodoistTouch.autoTabIntervalId = 999;
+    MMMTodoistTouch.handleAutoTab = jest.fn();
+
+    MMMTodoistTouch.unpauseAutoTab();
+
+    expect(global.setInterval).not.toHaveBeenCalled();
+    expect(MMMTodoistTouch.autoTabIntervalId).toBe(999);
   });
 });
 

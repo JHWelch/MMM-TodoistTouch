@@ -279,9 +279,8 @@ Module.register('MMM-TodoistTouch', {
   },
 
   unpauseAutoTab () {
-    if (!this.config.autoTabMode) {
-      return;
-    }
+    if (!this.config.autoTabMode) { return; }
+    if (this.autoTabIntervalId) { return; }
 
     const self = this;
 
