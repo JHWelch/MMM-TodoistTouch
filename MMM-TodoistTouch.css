@@ -16,6 +16,7 @@
   cursor: pointer;
   border-radius: 6px;
   padding: 4px 6px;
+  width: 100%;
 }
 
 .MMM-TodoistTouch .close-button {
