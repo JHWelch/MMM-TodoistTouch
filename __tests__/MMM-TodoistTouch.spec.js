@@ -321,6 +321,18 @@ describe('notificationReceived', () => {
       expect(MMMTodoistTouch.sendSocketNotification).not.toHaveBeenCalled();
     });
   });
+
+  describe('KEYBOARD_CLOSED', () => {
+    it('restarts the autoTab process', () => {
+      MMMTodoistTouch.pauseAutoTab = jest.fn();
+      MMMTodoistTouch.unpauseAutoTab = jest.fn();
+
+      MMMTodoistTouch.notificationReceived('KEYBOARD_CLOSED');
+
+      expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
+      expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
+    });
+  });
 });
 
 describe('bindTouchEvents', () => {

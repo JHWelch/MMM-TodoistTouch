@@ -78,6 +78,9 @@ Module.register('MMM-TodoistTouch', {
         addTaskArgs: this.config.addTaskArgs,
       });
       this.unpauseAutoTab();
+    } else if (notification === 'KEYBOARD_CLOSED') {
+      this.pauseAutoTab();
+      this.unpauseAutoTab();
     }
   },
 
