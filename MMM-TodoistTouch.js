@@ -91,8 +91,8 @@ Module.register('MMM-TodoistTouch', {
 
   openModal (e) {
     this.pauseAutoTab();
-    const { element, taskId } = this.taskDetails(e);
-    const pop = element.querySelector('.task-confirm');
+    const { taskContainer, taskId } = this.taskDetails(e);
+    const pop = taskContainer.querySelector('.task-confirm');
     pop.style.display = 'block';
 
     if (window.taskTimers) {
@@ -113,11 +113,11 @@ Module.register('MMM-TodoistTouch', {
   },
 
   cancelCloseTask  (e) {
-    const { element, taskId } = this.taskDetails(e);
+    const { taskContainer, taskId } = this.taskDetails(e);
     if (window.taskTimers && window.taskTimers[taskId]) {
       clearTimeout(window.taskTimers[taskId]);
     }
-    element.querySelector('.task-confirm').style.display='none';
+    taskContainer.querySelector('.task-confirm').style.display='none';
     this.unpauseAutoTab();
   },
 
@@ -275,10 +275,13 @@ Module.register('MMM-TodoistTouch', {
 
   taskDetails (e) {
     const li = e.currentTarget.closest('li');
+    const ul = li.closest('ul');
 
     return {
-      element: li,
+      taskContainer: li,
+      taskList: ul,
       taskId: li.getAttribute('data-task-id'),
+      tabId: ul.getAttribute('data-tab-id'),
     };
   },
 
