@@ -236,7 +236,15 @@ describe('notificationReceived', () => {
 
       expect(MMMTodoistTouch.bindTouchEvents).toHaveBeenCalled();
     });
+
+    it('resets autoTabPaused', () => {
+      MMMTodoistTouch.autoTabPaused = true;
+      MMMTodoistTouch.notificationReceived('MODULE_DOM_UPDATED');
+
+      expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+    });
   });
+
   describe('KEYBOARD_INPUT', () => {
     it('triggers a backend create if notification with key TODOIST_ADD_TASK', () => {
       const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
@@ -380,7 +388,7 @@ describe('openModal', () => {
   it('will pause the autoTab process', () => {
     MMMTodoistTouch.openModal(mockEvent);
 
-    expect(MMMTodoistTouch.autoTabPause).toBe(true);
+    expect(MMMTodoistTouch.autoTabPaused).toBe(true);
   });
 });
 
@@ -440,7 +448,7 @@ describe('confirmCloseTask', () => {
     expect(taskConfirm.style.display).toBe('none');
   });
 
-  it('unpauses autoTabPause', () => {
+  it('unpauses autoTabPaused', () => {
     MMMTodoistTouch.autoTabPaused = true;
 
     MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
@@ -466,7 +474,7 @@ describe('openKeyboardForAdd', () => {
   it('will pause the autoTab process', () => {
     MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
 
-    expect(MMMTodoistTouch.autoTabPause).toBe(true);
+    expect(MMMTodoistTouch.autoTabPaused).toBe(true);
   });
 });
 

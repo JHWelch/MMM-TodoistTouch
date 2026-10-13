@@ -70,6 +70,7 @@ Module.register('MMM-TodoistTouch', {
   notificationReceived: function (notification, payload, _sender) {
     if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
+      this.autoTabPaused = false;
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.commonPayload(),
@@ -89,7 +90,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   openModal (e) {
-    this.autoTabPause = true;
+    this.autoTabPaused = true;
     const { element, taskId } = this.taskDetails(e);
     const pop = element.querySelector('.task-confirm');
     pop.style.display = 'block';
@@ -121,7 +122,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   openKeyboardForAdd () {
-    this.autoTabPause = true;
+    this.autoTabPaused = true;
 
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
