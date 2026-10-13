@@ -6,6 +6,7 @@ require('../__mocks__/globalLogger');
 const name = 'MMM-TodoistTouch';
 
 let MMMTodoistTouch;
+const originalInterval = setInterval;
 
 beforeEach(() => {
   jest.resetModules();
@@ -16,10 +17,12 @@ beforeEach(() => {
 
   const date = new Date(2023, 9, 1); // October 1, 2023
   jest.useFakeTimers().setSystemTime(date);
+  global.setInterval = jest.fn().mockReturnValue(666555);
 });
 
 afterEach(() => {
   jest.useRealTimers();
+  global.setInterval = originalInterval;
 });
 
 it('has a default config', () => {
@@ -39,7 +42,6 @@ it('inits module in default state', () => {
 });
 
 describe('start', () => {
-  const originalInterval = setInterval;
   const configObject = {
     token: 'test-token',
     filter: 'test-filter',
@@ -48,16 +50,11 @@ describe('start', () => {
 
   beforeEach(() => {
     MMMTodoistTouch.setConfig(configObject);
-    global.setInterval = jest.fn().mockReturnValue(666555);
     MMMTodoistTouch.config.filter = 'test-filter';
     payload = {
       ...configObject,
       identifier: MMMTodoistTouch.identifier,
     };
-  });
-
-  afterEach(() => {
-    global.setInterval = originalInterval;
   });
 
   it('logs start of module', () => {
@@ -787,5 +784,35 @@ describe('bindTouchEvent', () => {
     expect(callback).toHaveBeenCalledTimes(2);
 
     document.body.removeChild(mockElement);
+  });
+});
+
+describe('unpauseAutoTab', () => {
+  it('will start the auto tab interval and save the id', () => {
+    MMMTodoistTouch.autoTabPaused = true;
+    MMMTodoistTouch.config.autoTabMode = 'return-home';
+    MMMTodoistTouch.config.autoTabInterval = 123456;
+    MMMTodoistTouch.handleAutoTab = jest.fn();
+
+    MMMTodoistTouch.unpauseAutoTab();
+
+    expect(global.setInterval).toHaveBeenCalledTimes(1);
+    expect(global.setInterval)
+      .toHaveBeenCalledWith(expect.any(Function), 123456);
+
+    global.setInterval.mock.calls[0][0]();
+    expect(MMMTodoistTouch.handleAutoTab).toHaveBeenCalled();
+    expect(MMMTodoistTouch.autoTabIntervalId).toEqual(666555);
+  });
+
+  it('will not do anything if autoTabMode is off', () => {
+    MMMTodoistTouch.config.autoTabMode = null;
+    MMMTodoistTouch.config.autoTabInterval = 123456;
+    MMMTodoistTouch.handleAutoTab = jest.fn();
+
+    MMMTodoistTouch.unpauseAutoTab();
+
+    expect(global.setInterval).not.toHaveBeenCalled();
+    expect(MMMTodoistTouch.autoTabIntervalId).toBeNull();
   });
 });

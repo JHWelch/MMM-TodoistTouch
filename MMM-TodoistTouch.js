@@ -34,11 +34,7 @@ Module.register('MMM-TodoistTouch', {
       self.getData();
     }, this.config.updateInterval);
 
-    if (this.config.autoTabMode) {
-      this.autoTabIntervalId = setInterval(() => {
-        self.handleAutoTab();
-      }, this.config.autoTabInterval);
-    }
+    this.unpauseAutoTab();
   },
 
   getData () {
@@ -282,5 +278,17 @@ Module.register('MMM-TodoistTouch', {
       element: li,
       taskId: li.getAttribute('data-task-id'),
     };
+  },
+
+  unpauseAutoTab () {
+    if (!this.config.autoTabMode) {
+      return;
+    }
+
+    const self = this;
+
+    this.autoTabIntervalId = setInterval(() => {
+      self.handleAutoTab();
+    }, this.config.autoTabInterval);
   },
 });
