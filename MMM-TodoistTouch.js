@@ -54,9 +54,7 @@ Module.register('MMM-TodoistTouch', {
       case 'advance': {
         const totalTabs = (this.config.tabs ?? []).length;
         const activeTab = parseInt(this.activeTab);
-        const targetTab = activeTab === (totalTabs - 1)
-          ? 0
-          : activeTab + 1;
+        const targetTab = (activeTab + 1) % totalTabs;
 
         this.swapTab(targetTab.toString());
         break;
