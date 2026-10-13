@@ -261,6 +261,15 @@ describe('notificationReceived', () => {
         });
     });
 
+    it('unpauses the autoMode process', () => {
+      MMMTodoistTouch.autoTabPaused = true;
+      const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+
+      MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
+
+      expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+    });
+
     it('includes extra addTaskArgs if provided in config', () => {
       const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
       MMMTodoistTouch.sendSocketNotification = jest.fn();

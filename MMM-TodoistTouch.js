@@ -77,6 +77,7 @@ Module.register('MMM-TodoistTouch', {
         content: payload.message,
         addTaskArgs: this.config.addTaskArgs,
       });
+      this.autoTabPaused = false;
     }
   },
 
