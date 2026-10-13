@@ -8,6 +8,32 @@ const name = 'MMM-TodoistTouch';
 let MMMTodoistTouch;
 const originalInterval = setInterval;
 
+const createTaskList = () => {
+  const taskContainer = document.createElement('li');
+  taskContainer.setAttribute('data-task-id', '123');
+  const openModalButton = document.createElement('button');
+  openModalButton.className = 'close-button';
+  const taskConfirmModal = document.createElement('div');
+  taskConfirmModal.className = 'task-confirm';
+  taskConfirmModal.style.display = 'none';
+  taskContainer.appendChild(openModalButton);
+  taskContainer.appendChild(taskConfirmModal);
+  const taskList = document.createElement('ul');
+  taskList.setAttribute('data-tab-id', '0');
+  taskList.appendChild(taskContainer);
+  document.body.appendChild(taskList);
+
+  const cleanUpDom = () => document.body.removeChild(taskList);
+
+  return {
+    openModalButton,
+    taskContainer,
+    taskConfirmModal,
+    taskList,
+    cleanUpDom,
+  };
+};
+
 beforeEach(() => {
   jest.resetModules();
   require('../MMM-TodoistTouch');
@@ -404,33 +430,22 @@ describe('bindTouchEvents', () => {
 });
 
 describe('openModal', () => {
-  let openModalButton;
-  let li;
-  let taskConfirmModal;
+  let elements;
   let mockEvent;
 
   beforeEach(() => {
-    openModalButton = document.createElement('button');
-    openModalButton.className = 'close-button';
-    taskConfirmModal = document.createElement('div');
-    taskConfirmModal.className = 'task-confirm';
-    taskConfirmModal.style.display = 'none';
-    li = document.createElement('li');
-    li.setAttribute('data-task-id', '123');
-    li.appendChild(openModalButton);
-    li.appendChild(taskConfirmModal);
-    document.body.appendChild(li);
-    mockEvent = { currentTarget: openModalButton };
+    elements = createTaskList();
+    mockEvent = { currentTarget: elements.openModalButton };
   });
 
   afterEach(() => {
-    document.body.removeChild(li);
+    elements.cleanUpDom();
   });
 
   it('opens the close modal', () => {
     MMMTodoistTouch.openModal(mockEvent);
 
-    expect(taskConfirmModal.style.display).toBe('block');
+    expect(elements.taskConfirmModal.style.display).toBe('block');
   });
 
   it('creates a new task timer', () => {
@@ -451,16 +466,12 @@ describe('openModal', () => {
 
 describe('confirmCloseTask', () => {
   it('dispatches close task event to node_helper and hides the confirm modal', () => {
-    const taskConfirm = document.createElement('div');
-    taskConfirm.className = 'task-confirm';
+    const { taskContainer, cleanUpDom, taskConfirmModal } = createTaskList();
     const triggerButton = document.createElement('button');
-    const li = document.createElement('li');
-    li.setAttribute('data-task-id', '123');
-    li.appendChild(taskConfirm);
-    li.appendChild(triggerButton);
-    document.body.appendChild(li);
+    taskContainer.appendChild(triggerButton);
     const mockEvent = { currentTarget: triggerButton };
     MMMTodoistTouch.sendSocketNotification = jest.fn();
+    taskConfirmModal.style.display = 'block';
 
     MMMTodoistTouch.confirmCloseTask(mockEvent, MMMTodoistTouch);
 
@@ -470,39 +481,32 @@ describe('confirmCloseTask', () => {
         token: MMMTodoistTouch.config.token,
         taskId: '123',
       });
-    expect(taskConfirm.style.display).toBe('none');
+    expect(taskConfirmModal.style.display).toBe('none');
 
-    document.body.removeChild(li);
+    cleanUpDom();
   });
 });
 
 describe('confirmCloseTask', () => {
-  let taskConfirm;
-  let triggerButton;
-  let li;
+  let elements;
   let mockEvent;
+  let triggerButton;
 
   beforeEach(() => {
-    taskConfirm = document.createElement('div');
-    taskConfirm.className = 'task-confirm';
+    elements = createTaskList();
     triggerButton = document.createElement('button');
-    li = document.createElement('li');
-    li.setAttribute('data-task-id', '123');
-    li.appendChild(taskConfirm);
-    li.appendChild(triggerButton);
-    document.body.appendChild(li);
+    elements.taskContainer.appendChild(triggerButton);
     mockEvent = { currentTarget: triggerButton };
   });
 
   afterEach(() => {
-    document.body.removeChild(li);
-
+    elements.cleanUpDom();
   });
 
   it('hides the confirm modal', () => {
     MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
 
-    expect(taskConfirm.style.display).toBe('none');
+    expect(elements.taskConfirmModal.style.display).toBe('none');
   });
 
   it('unpauses auto tab', () => {
@@ -510,7 +514,7 @@ describe('confirmCloseTask', () => {
 
     MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
 
-    expect(taskConfirm.style.display).toBe('none');
+    expect(elements.taskConfirmModal.style.display).toBe('none');
     expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
   });
 });
