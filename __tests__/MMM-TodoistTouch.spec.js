@@ -48,7 +48,7 @@ describe('start', () => {
 
   beforeEach(() => {
     MMMTodoistTouch.setConfig(configObject);
-    global.setInterval = jest.fn();
+    global.setInterval = jest.fn().mockReturnValue(666555);
     MMMTodoistTouch.config.filter = 'test-filter';
     payload = {
       ...configObject,
@@ -108,6 +108,7 @@ describe('start', () => {
     global.setInterval.mock.calls[1][0]();
 
     expect(MMMTodoistTouch.handleAutoTab).toHaveBeenCalled();
+    expect(MMMTodoistTouch.autoTabIntervalId).toEqual(666555);
   });
 });
 

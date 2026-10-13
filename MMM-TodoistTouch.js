@@ -22,6 +22,8 @@ Module.register('MMM-TodoistTouch', {
 
   autoTabPaused: false,
 
+  autoTabIntervalId: null,
+
   start () {
     Log.info(`Starting module: ${this.name}`);
     const self = this;
@@ -33,7 +35,7 @@ Module.register('MMM-TodoistTouch', {
     }, this.config.updateInterval);
 
     if (this.config.autoTabMode) {
-      setInterval(() => {
+      this.autoTabIntervalId = setInterval(() => {
         self.handleAutoTab();
       }, this.config.autoTabInterval);
     }
