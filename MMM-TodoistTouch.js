@@ -87,7 +87,7 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
-    this.bindTouchEvent('.tab-button', this.swapTab);
+    this.bindTouchEvent('.tab-button', this.userSwapTab);
   },
 
   openModal (e) {
@@ -132,10 +132,15 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
-  swapTab (eventOrIndex) {
-    const tabId = typeof eventOrIndex ==='object'
-      ? eventOrIndex.currentTarget.getAttribute('data-tab-id')
-      : eventOrIndex;
+  userSwapTab (e) {
+    const tabId = e.currentTarget.getAttribute('data-tab-id');
+
+    this.swapTab(tabId);
+    this.pauseAutoTab();
+    this.unpauseAutoTab();
+  },
+
+  swapTab (tabId) {
     const lists = document.querySelectorAll('.MMM-TodoistTouch .list');
     const buttons = document.querySelectorAll('.MMM-TodoistTouch .tab-button');
 
