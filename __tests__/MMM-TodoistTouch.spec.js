@@ -16,21 +16,25 @@ const createTaskList = () => {
   const taskConfirmModal = document.createElement('div');
   taskConfirmModal.className = 'task-confirm';
   taskConfirmModal.style.display = 'none';
+  const triggerButton = document.createElement('button');
+  taskContainer.appendChild(triggerButton);
   taskContainer.appendChild(openModalButton);
   taskContainer.appendChild(taskConfirmModal);
   const taskList = document.createElement('ul');
   taskList.setAttribute('data-tab-id', '0');
   taskList.appendChild(taskContainer);
   document.body.appendChild(taskList);
+  const mockEvent = { currentTarget: triggerButton };
 
   const cleanUpDom = () => document.body.removeChild(taskList);
 
   return {
-    openModalButton,
-    taskContainer,
-    taskConfirmModal,
-    taskList,
     cleanUpDom,
+    mockEvent,
+    openModalButton,
+    taskConfirmModal,
+    taskContainer,
+    taskList,
   };
 };
 
@@ -466,10 +470,8 @@ describe('openModal', () => {
 
 describe('confirmCloseTask', () => {
   it('dispatches close task event to node_helper and hides the confirm modal', () => {
-    const { taskContainer, cleanUpDom, taskConfirmModal } = createTaskList();
-    const triggerButton = document.createElement('button');
-    taskContainer.appendChild(triggerButton);
-    const mockEvent = { currentTarget: triggerButton };
+    const { mockEvent, cleanUpDom, taskConfirmModal } = createTaskList();
+
     MMMTodoistTouch.sendSocketNotification = jest.fn();
     taskConfirmModal.style.display = 'block';
 
@@ -490,13 +492,9 @@ describe('confirmCloseTask', () => {
 describe('confirmCloseTask', () => {
   let elements;
   let mockEvent;
-  let triggerButton;
 
   beforeEach(() => {
     elements = createTaskList();
-    triggerButton = document.createElement('button');
-    elements.taskContainer.appendChild(triggerButton);
-    mockEvent = { currentTarget: triggerButton };
   });
 
   afterEach(() => {
@@ -504,7 +502,7 @@ describe('confirmCloseTask', () => {
   });
 
   it('hides the confirm modal', () => {
-    MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
+    MMMTodoistTouch.cancelCloseTask(elements.mockEvent, MMMTodoistTouch);
 
     expect(elements.taskConfirmModal.style.display).toBe('none');
   });
@@ -512,7 +510,7 @@ describe('confirmCloseTask', () => {
   it('unpauses auto tab', () => {
     MMMTodoistTouch.unpauseAutoTab = jest.fn();
 
-    MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
+    MMMTodoistTouch.cancelCloseTask(elements.mockEvent, MMMTodoistTouch);
 
     expect(elements.taskConfirmModal.style.display).toBe('none');
     expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
@@ -520,22 +518,35 @@ describe('confirmCloseTask', () => {
 });
 
 describe('openKeyboardForAdd', () => {
+  let elements;
+
+  beforeEach(() => {
+    elements = createTaskList();
+  });
+
+  afterEach(() => {
+    elements.cleanUpDom();
+  });
+
   it('sends keyboard notification', () => {
     MMMTodoistTouch.sendNotification = jest.fn();
 
-    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
+    MMMTodoistTouch.openKeyboardForAdd(elements.mockEvent);
 
     expect(MMMTodoistTouch.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
+      data: {
+        tabId: '0',
+      },
     });
   });
 
   it('will pause the autoTab process', () => {
     MMMTodoistTouch.pauseAutoTab = jest.fn();
 
-    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
+    MMMTodoistTouch.openKeyboardForAdd(elements.mockEvent);
 
     expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
   });

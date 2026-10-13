@@ -121,13 +121,15 @@ Module.register('MMM-TodoistTouch', {
     this.unpauseAutoTab();
   },
 
-  openKeyboardForAdd () {
+  openKeyboardForAdd (e) {
     this.pauseAutoTab();
+    const { tabId } = this.taskDetails(e);
 
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
+      data: { tabId },
     });
   },
 
