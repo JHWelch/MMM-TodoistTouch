@@ -179,6 +179,7 @@ describe('handleAutoTab', () => {
   describe('return-home', () => {
     beforeEach(() => {
       MMMTodoistTouch.config.autoTabMode = 'return-home';
+      MMMTodoistTouch.autoTabIntervalId = 12345;
     });
 
     it('resets the active tab to 0', () => {
@@ -199,7 +200,7 @@ describe('handleAutoTab', () => {
 
     it('does not do anything if autoTab is paused', () => {
       MMMTodoistTouch.activeTab = '1';
-      MMMTodoistTouch.autoTabPaused = true;
+      MMMTodoistTouch.autoTabIntervalId = null;
 
       MMMTodoistTouch.handleAutoTab();
 
@@ -210,6 +211,7 @@ describe('handleAutoTab', () => {
   describe('advance', () => {
     beforeEach(() => {
       MMMTodoistTouch.config.autoTabMode = 'advance';
+      MMMTodoistTouch.autoTabIntervalId = 12345;
     });
 
     it('sets to the next active tab', () => {
@@ -227,7 +229,7 @@ describe('handleAutoTab', () => {
     });
 
     it('does not do anything if autoTab is paused', () => {
-      MMMTodoistTouch.autoTabPaused = true;
+      MMMTodoistTouch.autoTabIntervalId = null;
 
       MMMTodoistTouch.handleAutoTab();
 
@@ -240,6 +242,7 @@ describe('notificationReceived', () => {
   describe('MODULE_DOM_UPDATED', () => {
     it('does nothing if notification is not MODULE_DOM_UPDATED', () => {
       MMMTodoistTouch.bindTouchEvents = jest.fn();
+
       MMMTodoistTouch.notificationReceived('SOME_OTHER_NOTIFICATION');
 
       expect(MMMTodoistTouch.bindTouchEvents).not.toHaveBeenCalled();
@@ -247,16 +250,18 @@ describe('notificationReceived', () => {
 
     it('binds touch events if notification is MODULE_DOM_UPDATED', () => {
       MMMTodoistTouch.bindTouchEvents = jest.fn();
+
       MMMTodoistTouch.notificationReceived('MODULE_DOM_UPDATED');
 
       expect(MMMTodoistTouch.bindTouchEvents).toHaveBeenCalled();
     });
 
-    it('resets autoTabPaused', () => {
-      MMMTodoistTouch.autoTabPaused = true;
+    it('unpauses auto tab', () => {
+      MMMTodoistTouch.unpauseAutoTab = jest.fn();
+
       MMMTodoistTouch.notificationReceived('MODULE_DOM_UPDATED');
 
-      expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+      expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
     });
   });
 
@@ -277,12 +282,12 @@ describe('notificationReceived', () => {
     });
 
     it('unpauses the autoMode process', () => {
-      MMMTodoistTouch.autoTabPaused = true;
       const payload = { key: 'TODOIST_ADD_TASK', message: 'Test message' };
+      MMMTodoistTouch.unpauseAutoTab = jest.fn();
 
       MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
 
-      expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+      expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
     });
 
     it('includes extra addTaskArgs if provided in config', () => {
@@ -410,9 +415,11 @@ describe('openModal', () => {
   });
 
   it('will pause the autoTab process', () => {
+    MMMTodoistTouch.pauseAutoTab = jest.fn();
+
     MMMTodoistTouch.openModal(mockEvent);
 
-    expect(MMMTodoistTouch.autoTabPaused).toBe(true);
+    expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
   });
 });
 
@@ -472,13 +479,13 @@ describe('confirmCloseTask', () => {
     expect(taskConfirm.style.display).toBe('none');
   });
 
-  it('unpauses autoTabPaused', () => {
-    MMMTodoistTouch.autoTabPaused = true;
+  it('unpauses auto tab', () => {
+    MMMTodoistTouch.unpauseAutoTab = jest.fn();
 
     MMMTodoistTouch.cancelCloseTask(mockEvent, MMMTodoistTouch);
 
     expect(taskConfirm.style.display).toBe('none');
-    expect(MMMTodoistTouch.autoTabPaused).toBe(false);
+    expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
   });
 });
 
@@ -496,9 +503,11 @@ describe('openKeyboardForAdd', () => {
   });
 
   it('will pause the autoTab process', () => {
+    MMMTodoistTouch.pauseAutoTab = jest.fn();
+
     MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
 
-    expect(MMMTodoistTouch.autoTabPaused).toBe(true);
+    expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
   });
 });
 
