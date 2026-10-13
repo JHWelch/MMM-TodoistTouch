@@ -40,9 +40,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   handleAutoTab () {
-    if (!this.autoTabIntervalId) {
-      return;
-    }
+    if (!this.autoTabIntervalId) { return; }
 
     switch (this.config.autoTabMode) {
       case 'return-home': {
@@ -298,9 +296,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   pauseAutoTab () {
-    if (!this.autoTabIntervalId) {
-      return;
-    }
+    if (!this.autoTabIntervalId) { return; }
 
     clearInterval(this.autoTabIntervalId);
 
