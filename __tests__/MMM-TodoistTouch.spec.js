@@ -462,6 +462,12 @@ describe('openKeyboardForAdd', () => {
       sendLabel: 'Add Task',
     });
   });
+
+  it('will pause the autoTab process', () => {
+    MMMTodoistTouch.openKeyboardForAdd(MMMTodoistTouch);
+
+    expect(MMMTodoistTouch.autoTabPause).toBe(true);
+  });
 });
 
 describe('swapTab', () => {

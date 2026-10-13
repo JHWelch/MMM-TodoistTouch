@@ -121,6 +121,8 @@ Module.register('MMM-TodoistTouch', {
   },
 
   openKeyboardForAdd () {
+    this.autoTabPause = true;
+
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
