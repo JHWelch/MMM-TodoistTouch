@@ -198,6 +198,15 @@ describe('handleAutoTab', () => {
 
       expect(MMMTodoistTouch.swapTab).not.toHaveBeenCalled();
     });
+
+    it('does not do anything if autoTab is paused', () => {
+      MMMTodoistTouch.activeTab = '1';
+      MMMTodoistTouch.autoTabPaused = true;
+
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).not.toHaveBeenCalled();
+    });
   });
 
   describe('advance', () => {
@@ -217,6 +226,14 @@ describe('handleAutoTab', () => {
       MMMTodoistTouch.handleAutoTab();
 
       expect(MMMTodoistTouch.swapTab).toHaveBeenCalledWith('0');
+    });
+
+    it('does not do anything if autoTab is paused', () => {
+      MMMTodoistTouch.autoTabPaused = true;
+
+      MMMTodoistTouch.handleAutoTab();
+
+      expect(MMMTodoistTouch.swapTab).not.toHaveBeenCalled();
     });
   });
 });

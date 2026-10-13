@@ -44,6 +44,10 @@ Module.register('MMM-TodoistTouch', {
   },
 
   handleAutoTab () {
+    if (this.autoTabPaused) {
+      return;
+    }
+
     switch (this.config.autoTabMode) {
       case 'return-home': {
         if (this.activeTab === '0') {
