@@ -323,14 +323,28 @@ describe('notificationReceived', () => {
   });
 
   describe('KEYBOARD_CLOSED', () => {
-    it('restarts the autoTab process', () => {
+    it('restarts the autoTab process with TODOIST_ADD_TASK key', () => {
       MMMTodoistTouch.pauseAutoTab = jest.fn();
       MMMTodoistTouch.unpauseAutoTab = jest.fn();
 
-      MMMTodoistTouch.notificationReceived('KEYBOARD_CLOSED');
+      MMMTodoistTouch.notificationReceived('KEYBOARD_CLOSED', {
+        key: 'TODOIST_ADD_TASK',
+      });
 
       expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
       expect(MMMTodoistTouch.unpauseAutoTab).toHaveBeenCalled();
+    });
+
+    it('ignores other keys', () => {
+      MMMTodoistTouch.pauseAutoTab = jest.fn();
+      MMMTodoistTouch.unpauseAutoTab = jest.fn();
+
+      MMMTodoistTouch.notificationReceived('KEYBOARD_CLOSED', {
+        key: 'anything-else',
+      });
+
+      expect(MMMTodoistTouch.pauseAutoTab).not.toHaveBeenCalled();
+      expect(MMMTodoistTouch.unpauseAutoTab).not.toHaveBeenCalled();
     });
   });
 });
