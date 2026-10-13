@@ -20,6 +20,8 @@ Module.register('MMM-TodoistTouch', {
 
   activeTab: '0',
 
+  autoTabIntervalId: null,
+
   start () {
     Log.info(`Starting module: ${this.name}`);
     const self = this;
@@ -29,22 +31,52 @@ Module.register('MMM-TodoistTouch', {
     setInterval(() => {
       self.getData();
     }, this.config.updateInterval);
+
+    this.unpauseAutoTab();
   },
 
   getData () {
     this.sendSocketNotification('MMM-TodoistTouch-FETCH', this.commonPayload());
   },
 
+  handleAutoTab () {
+    if (!this.autoTabIntervalId) { return; }
+
+    switch (this.config.autoTabMode) {
+      case 'return-home': {
+        if (this.activeTab === '0') {
+          break;
+        }
+
+        this.swapTab('0');
+        break;
+      }
+      case 'advance': {
+        const totalTabs = (this.config.tabs ?? []).length;
+        const activeTab = parseInt(this.activeTab);
+        const targetTab = (activeTab + 1) % totalTabs;
+
+        this.swapTab(targetTab.toString());
+        break;
+      }
+    }
+  },
+
   // 1. Bind touch events every time the template renders on screen
   notificationReceived: function (notification, payload, _sender) {
     if (notification === 'MODULE_DOM_UPDATED') {
       this.bindTouchEvents();
+      this.unpauseAutoTab();
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.commonPayload(),
         content: payload.message,
         addTaskArgs: this.config.addTaskArgs,
       });
+      this.unpauseAutoTab();
+    } else if (notification === 'KEYBOARD_CLOSED' && payload.key === 'TODOIST_ADD_TASK') {
+      this.pauseAutoTab();
+      this.unpauseAutoTab();
     }
   },
 
@@ -54,10 +86,11 @@ Module.register('MMM-TodoistTouch', {
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
-    this.bindTouchEvent('.tab-button', this.swapTab);
+    this.bindTouchEvent('.tab-button', this.userSwapTab);
   },
 
   openModal (e) {
+    this.pauseAutoTab();
     const { element, taskId } = this.taskDetails(e);
     const pop = element.querySelector('.task-confirm');
     pop.style.display = 'block';
@@ -85,9 +118,12 @@ Module.register('MMM-TodoistTouch', {
       clearTimeout(window.taskTimers[taskId]);
     }
     element.querySelector('.task-confirm').style.display='none';
+    this.unpauseAutoTab();
   },
 
   openKeyboardForAdd () {
+    this.pauseAutoTab();
+
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
@@ -95,8 +131,15 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
-  swapTab (e) {
+  userSwapTab (e) {
     const tabId = e.currentTarget.getAttribute('data-tab-id');
+
+    this.swapTab(tabId);
+    this.pauseAutoTab();
+    this.unpauseAutoTab();
+  },
+
+  swapTab (tabId) {
     const lists = document.querySelectorAll('.MMM-TodoistTouch .list');
     const buttons = document.querySelectorAll('.MMM-TodoistTouch .tab-button');
 
@@ -237,5 +280,24 @@ Module.register('MMM-TodoistTouch', {
       element: li,
       taskId: li.getAttribute('data-task-id'),
     };
+  },
+
+  unpauseAutoTab () {
+    if (!this.config.autoTabMode) { return; }
+    if (this.autoTabIntervalId) { return; }
+
+    const self = this;
+
+    this.autoTabIntervalId = setInterval(() => {
+      self.handleAutoTab();
+    }, this.config.autoTabInterval);
+  },
+
+  pauseAutoTab () {
+    if (!this.autoTabIntervalId) { return; }
+
+    clearInterval(this.autoTabIntervalId);
+
+    this.autoTabIntervalId = null;
   },
 });
