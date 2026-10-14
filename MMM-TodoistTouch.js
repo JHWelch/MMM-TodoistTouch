@@ -68,10 +68,22 @@ Module.register('MMM-TodoistTouch', {
       this.bindTouchEvents();
       this.unpauseAutoTab();
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
+      const tabOverrides = {};
+
+      // Get tab specific overrides
+      if (this.config.tabs?.length) {
+        const { tabId } = payload.data;
+        const tab = this.config.tabs[parseInt(tabId)];
+        if (tab.addTaskArgs) {
+          tabOverrides.addTaskArgs = tab.addTaskArgs;
+        }
+      }
+
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.commonPayload(),
         content: payload.message,
         addTaskArgs: this.config.addTaskArgs,
+        ...tabOverrides,
       });
       this.unpauseAutoTab();
     } else if (notification === 'KEYBOARD_CLOSED' && payload.key === 'TODOIST_ADD_TASK') {

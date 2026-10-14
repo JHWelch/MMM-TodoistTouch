@@ -350,6 +350,88 @@ describe('notificationReceived', () => {
 
       expect(MMMTodoistTouch.sendSocketNotification).not.toHaveBeenCalled();
     });
+
+    describe('tabs', () => {
+      it('will override addTaskArgs from tabs', () => {
+        const payload = {
+          key: 'TODOIST_ADD_TASK',
+          message: 'Test message',
+          data: {
+            tabId: '1',
+          },
+        };
+        MMMTodoistTouch.sendSocketNotification = jest.fn();
+        MMMTodoistTouch.config.addTaskArgs = {
+          projectId: 'one-project',
+        };
+        MMMTodoistTouch.config.tabs = [
+          {
+            name: 'Tab 1',
+            filter: 'today',
+            addTaskArgs: {
+              projectId: 'not-this-project',
+            },
+          },
+          {
+            name: 'Tab 2',
+            filter: 'tomorrow',
+            addTaskArgs: {
+              projectId: 'another-project',
+            },
+          },
+        ];
+
+        MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
+
+        expect(MMMTodoistTouch.sendSocketNotification)
+          .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+            identifier: MMMTodoistTouch.identifier,
+            token: MMMTodoistTouch.config.token,
+            content: payload.message,
+            tabs: MMMTodoistTouch.config.tabs,
+            addTaskArgs: {
+              projectId: 'another-project',
+            },
+          });
+      });
+
+      it('still will uses default addTaskArgs if not overridden', () => {
+        const payload = {
+          key: 'TODOIST_ADD_TASK',
+          message: 'Test message',
+          data: {
+            tabId: '1',
+          },
+        };
+        MMMTodoistTouch.sendSocketNotification = jest.fn();
+        MMMTodoistTouch.config.addTaskArgs = {
+          projectId: 'one-project',
+        };
+        MMMTodoistTouch.config.tabs = [
+          {
+            name: 'Tab 1',
+            filter: 'today',
+          },
+          {
+            name: 'Tab 2',
+            filter: 'tomorrow',
+          },
+        ];
+
+        MMMTodoistTouch.notificationReceived('KEYBOARD_INPUT', payload);
+
+        expect(MMMTodoistTouch.sendSocketNotification)
+          .toHaveBeenCalledWith('MMM-TodoistTouch-CREATE-TASK', {
+            identifier: MMMTodoistTouch.identifier,
+            token: MMMTodoistTouch.config.token,
+            content: payload.message,
+            tabs: MMMTodoistTouch.config.tabs,
+            addTaskArgs: {
+              projectId: 'one-project',
+            },
+          });
+      });
+    });
   });
 
   describe('KEYBOARD_CLOSED', () => {
