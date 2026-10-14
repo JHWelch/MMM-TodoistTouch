@@ -517,11 +517,9 @@ describe('bindTouchEvents', () => {
 
 describe('openModal', () => {
   let elements;
-  let mockEvent;
 
   beforeEach(() => {
     elements = createTaskList();
-    mockEvent = { currentTarget: elements.openModalButton };
   });
 
   afterEach(() => {
@@ -529,13 +527,13 @@ describe('openModal', () => {
   });
 
   it('opens the close modal', () => {
-    MMMTodoistTouch.openModal(mockEvent);
+    MMMTodoistTouch.openModal(elements.mockEvent);
 
     expect(elements.taskConfirmModal.style.display).toBe('block');
   });
 
   it('creates a new task timer', () => {
-    MMMTodoistTouch.openModal(mockEvent);
+    MMMTodoistTouch.openModal(elements.mockEvent);
 
     expect(typeof window.taskTimers).toBe('object');
     expect(window.taskTimers['123']).toEqual(expect.any(Number));
@@ -544,7 +542,7 @@ describe('openModal', () => {
   it('will pause the autoTab process', () => {
     MMMTodoistTouch.pauseAutoTab = jest.fn();
 
-    MMMTodoistTouch.openModal(mockEvent);
+    MMMTodoistTouch.openModal(elements.mockEvent);
 
     expect(MMMTodoistTouch.pauseAutoTab).toHaveBeenCalled();
   });
@@ -573,7 +571,6 @@ describe('confirmCloseTask', () => {
 
 describe('confirmCloseTask', () => {
   let elements;
-  let mockEvent;
 
   beforeEach(() => {
     elements = createTaskList();

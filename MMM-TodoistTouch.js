@@ -288,14 +288,14 @@ Module.register('MMM-TodoistTouch', {
   },
 
   taskDetails (e) {
-    const li = e.currentTarget.closest('li');
-    const ul = li.closest('ul');
+    const taskContainer = e.currentTarget.closest('li');
+    const taskList = taskContainer.closest('ul');
 
     return {
-      taskContainer: li,
-      taskList: ul,
-      taskId: li.getAttribute('data-task-id'),
-      tabId: ul.getAttribute('data-tab-id'),
+      taskContainer,
+      taskList,
+      taskId: taskContainer.getAttribute('data-task-id'),
+      tabId: taskList.getAttribute('data-tab-id'),
     };
   },
 
