@@ -70,15 +70,20 @@ Specify a number of different tabs, each with their own filter. Requires a touch
     {
       name: 'Jordan',
       filter: '#Personal',
+      addTaskArgs: {
+        projectId: 'personal-project-id',
+        dueString: 'today',
+      },
     },
   ],
 }
 ```
 
-| Option   | Required?    | Description                                                                                                                    |
-| -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| `name`   | **Required** | The title of tab. Text shown on the tab button                                                                                 |
-| `filter` | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
+| Option        | Required?    | Description                                                                                                                    |
+| ------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `name`        | **Required** | The title of tab. Text shown on the tab button                                                                                 |
+| `filter`      | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
+| `addTaskArgs` | *Optional*   | Override `addTaskArgs` for the tab. See `addTaskArgs` in the [main config](#customizing-config).                               |
 
 #### Auto Tab mode
 
