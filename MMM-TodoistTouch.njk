@@ -1,10 +1,6 @@
 {% if loading %}
   <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
 {% else %}
-  <header class="space-between small">
-    <span>{{ "TASKS" | translate }}</span>
-  </header>
-
   {% if tabs %}
     <div class="tabs">
       {% for tab in tabs %}
