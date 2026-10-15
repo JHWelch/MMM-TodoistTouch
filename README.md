@@ -45,16 +45,16 @@ Use either the "test token" provided there, or go through an Oauth flow to get a
 
 ### Customizing Config
 
-| Option            | Required?    | Description                                                                                                                                                  |
-| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `token`           | **Required** | Your Todoist API token.                                                                                                                                      |
-| `updateInterval`  | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute)                                                                                       |
-| `filter`          | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter) |
-| `noTasksMessage`  | *Optional*   | Message to display when there are no tasks. <br>Default `NO_TASKS` (see translation strings)                                                                 |
-| `addTaskArgs`     | *Optional*   | Additional task data to pass when creating a new task. [See full list of args](node_modules/@doist/todoist-sdk/dist/types/types/tasks/requests.d.ts)         |
-| `tabs`            | *Optional*   | Allows for multiple tabs of tasks. See [the Tabs Config](#tabs-config) section below for more information                                                    |
-| `autoTabMode`     | *Optional*   | Whether to automatically change tabs. Options are `'return-home'`, `'advance'` or `null`. <br> Default `null` (nothing)                                      |
-| `autoTabInterval` | *Optional*   | The interval after which to perform the `autoTabMode` action. If `autoTabMode` is null, has no affect. <br> Default `10000` milliseconds (10 seconds)        |
+| Option            | Required?    | Description                                                                                                                                                                                                  |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `token`           | **Required** | Your Todoist API token.                                                                                                                                                                                      |
+| `updateInterval`  | *Optional*   | Refresh time in milliseconds <br>Default 60000 milliseconds (1 minute)                                                                                                                                       |
+| `filter`          | *Optional*   | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH) <br>Default `null` (no filter)                                                 |
+| `noTasksMessage`  | *Optional*   | Message to display when there are no tasks. <br>Default `NO_TASKS` (see translation strings)                                                                                                                 |
+| `addTaskArgs`     | *Optional*   | Additional task data to pass when creating a new task. [See full list of args](https://github.com/Doist/todoist-sdk-typescript/blob/b9b9dbd3dd1d1b4b5447ff2e89cf63e1ec68f54c/src/types/tasks/requests.ts#L8) |
+| `tabs`            | *Optional*   | Allows for multiple tabs of tasks. See [the Tabs Config](#tabs-config) section below for more information                                                                                                    |
+| `autoTabMode`     | *Optional*   | Whether to automatically change tabs. Options are `'return-home'`, `'advance'` or `null`. <br> Default `null` (nothing)                                                                                      |
+| `autoTabInterval` | *Optional*   | The interval after which to perform the `autoTabMode` action. If `autoTabMode` is null, has no affect. <br> Default `10000` milliseconds (10 seconds)                                                        |
 
 #### Tabs Config
 
