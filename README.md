@@ -70,6 +70,10 @@ Specify a number of different tabs, each with their own filter. Requires a touch
     {
       name: 'Jordan',
       filter: '#Personal',
+      addTaskArgs: {
+        projectId: 'personal-project-id',
+        dueString: 'today',
+      },
     },
   ],
 }
