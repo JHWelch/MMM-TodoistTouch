@@ -68,10 +68,22 @@ Module.register('MMM-TodoistTouch', {
       this.bindTouchEvents();
       this.unpauseAutoTab();
     } else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_ADD_TASK') {
+      const tabOverrides = {};
+
+      // Get tab specific overrides
+      if (this.config.tabs?.length) {
+        const { tabId } = payload.data;
+        const tab = this.config.tabs[parseInt(tabId)];
+        if (tab.addTaskArgs) {
+          tabOverrides.addTaskArgs = tab.addTaskArgs;
+        }
+      }
+
       this.sendSocketNotification('MMM-TodoistTouch-CREATE-TASK', {
         ...this.commonPayload(),
         content: payload.message,
         addTaskArgs: this.config.addTaskArgs,
+        ...tabOverrides,
       });
       this.unpauseAutoTab();
     } else if (notification === 'KEYBOARD_CLOSED' && payload.key === 'TODOIST_ADD_TASK') {
@@ -91,8 +103,8 @@ Module.register('MMM-TodoistTouch', {
 
   openModal (e) {
     this.pauseAutoTab();
-    const { element, taskId } = this.taskDetails(e);
-    const pop = element.querySelector('.task-confirm');
+    const { taskContainer, taskId } = this.taskDetails(e);
+    const pop = taskContainer.querySelector('.task-confirm');
     pop.style.display = 'block';
 
     if (window.taskTimers) {
@@ -113,21 +125,23 @@ Module.register('MMM-TodoistTouch', {
   },
 
   cancelCloseTask  (e) {
-    const { element, taskId } = this.taskDetails(e);
+    const { taskContainer, taskId } = this.taskDetails(e);
     if (window.taskTimers && window.taskTimers[taskId]) {
       clearTimeout(window.taskTimers[taskId]);
     }
-    element.querySelector('.task-confirm').style.display='none';
+    taskContainer.querySelector('.task-confirm').style.display='none';
     this.unpauseAutoTab();
   },
 
-  openKeyboardForAdd () {
+  openKeyboardForAdd (e) {
     this.pauseAutoTab();
+    const { tabId } = this.taskDetails(e);
 
     this.sendNotification('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
       sendLabel: 'Add Task',
+      data: { tabId },
     });
   },
 
@@ -274,11 +288,14 @@ Module.register('MMM-TodoistTouch', {
   },
 
   taskDetails (e) {
-    const li = e.currentTarget.closest('li');
+    const taskContainer = e.currentTarget.closest('li');
+    const taskList = taskContainer.closest('ul');
 
     return {
-      element: li,
-      taskId: li.getAttribute('data-task-id'),
+      taskContainer,
+      taskList,
+      taskId: taskContainer.getAttribute('data-task-id'),
+      tabId: taskList.getAttribute('data-tab-id'),
     };
   },
 
