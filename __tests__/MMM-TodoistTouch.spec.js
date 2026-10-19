@@ -615,7 +615,7 @@ describe('openKeyboardForAdd', () => {
     expect(MMMTodoistTouch.sendNotification).toHaveBeenCalledWith('KEYBOARD', {
       key: 'TODOIST_ADD_TASK',
       style: 'default',
-      sendLabel: 'Add Task',
+      sendLabel: 'Add\u00A0Task',
       data: {
         tabId: '0',
       },
