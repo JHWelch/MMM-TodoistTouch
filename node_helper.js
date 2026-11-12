@@ -15,6 +15,7 @@ module.exports = NodeHelper.create({
       case 'MMM-TodoistTouch-FETCH': this.fetchData(payload); break;
       case 'MMM-TodoistTouch-CLOSE-TASK': this.closeTask(payload); break;
       case 'MMM-TodoistTouch-CREATE-TASK': this.createTask(payload); break;
+      case 'MMM-TodoistTouch-UPDATE-TASK': this.updateTask(payload); break; 
     }
   },
 
@@ -37,6 +38,16 @@ module.exports = NodeHelper.create({
       ...(payload.addTaskArgs ?? {}),
     })
       .then(() => this.getDataAndReturn(context));
+  },
+
+  updateTask (payload) {
+    const context = this.context(payload);
+
+    // Call the official Todoist SDK to update the specific task text
+    context.api.updateTask(payload.taskId, {
+      content: payload.content, // This is the new message from the screen keyboard
+    })
+      .then(() => this.getDataAndReturn(context)); // Refresh the mirror to show the edited task
   },
 
   context ({token, filter, identifier, tabs}) {
