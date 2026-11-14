@@ -379,14 +379,14 @@ bindTouchEvent (className, shortPressCallback, longPressCallback) {
             
             longPressTriggered = false;
 
-      // 🌟 VISUAL FEEDBACK: Shrink and dim the moment the finger hits the glass
+      // 🌟 VISUAL FEEDBACK: Shrink and dim
             this.addPressFeedback(element);
 
             // Your optimized 600ms timer
             pressTimer = setTimeout(() => {
                 longPressTriggered = true;
                 
-      // 🌟 FIX: Punch the button outward to 105% and brighten it up instantly
+      // 🌟 FIX: Punch the button outward to 105% and brighten it up
                 element.style.transform = "scale(1.05)";
                 element.style.opacity = "1";
 
