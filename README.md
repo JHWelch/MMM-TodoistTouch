@@ -14,7 +14,8 @@ npm install --omit=dev
 
 ### Keyboard
 
-To use the "Add Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). Either this fork or the original @lavolp3 version will work.
+To use the "Add Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). Either this fork or the original @lavolp3 version will work.  
+To use the "Update Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). The original @lavolp3 version will not work correctly because it will not fill in the keyboard with the current contents of the task description.
 
 ## Using the module
 
@@ -84,6 +85,22 @@ Specify a number of different tabs, each with their own filter. Requires a touch
 | `name`        | **Required** | The title of tab. Text shown on the tab button                                                                                 |
 | `filter`      | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
 | `addTaskArgs` | *Optional*   | Override `addTaskArgs` for the tab. See `addTaskArgs` in the [main config](#customizing-config).                               |
+
+#### Functions
+**Add Task** feature:  
+Press the **+** sign under the task list to add a new task.  
+A keyboard will appear and allow you to enter a new task.    
+Press "Add Task" to add it, or "Cancel"
+
+**Complete Task** feature:  
+Press on a task description (or click).  
+A confirmation pop-up will appear.  
+Press "Confirm" or "Cancel"
+
+**Update Task** feature:  
+Long Press on a task description (or long click).  
+A keyboard will appear filled in with the current task description.  Make the necessary updates.  
+Press "Update" or "Cancel"
 
 #### Auto Tab mode
 

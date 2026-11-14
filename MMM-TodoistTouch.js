@@ -86,7 +86,20 @@ Module.register('MMM-TodoistTouch', {
         ...tabOverrides,
       });
       this.unpauseAutoTab();
-    } else if (notification === 'KEYBOARD_CLOSED' && payload.key === 'TODOIST_ADD_TASK') {
+    } 
+    // === NEW LOGIC FOR HANDLING UPDATES ===
+    else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_UPDATE_TASK') {
+      const { taskId } = payload.data; // Extract the specific task ID we passed to the keyboard
+
+      this.sendSocketNotification('MMM-TodoistTouch-UPDATE-TASK', {
+        ...this.commonPayload(),
+        taskId: taskId,
+        content: payload.message, // The new edited text you typed into the keyboard
+      });
+      this.unpauseAutoTab();
+    } 
+    // ======================================
+    else if (notification === 'KEYBOARD_CLOSED' && (payload.key === 'TODOIST_ADD_TASK' || payload.key === 'TODOIST_UPDATE_TASK')) {
       this.pauseAutoTab();
       this.unpauseAutoTab();
     }
@@ -94,7 +107,9 @@ Module.register('MMM-TodoistTouch', {
 
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
   bindTouchEvents: function () {
-    this.bindTouchEvent('.close-button', this.openModal);
+    // Short press -> openModal | Long press -> openKeyboardForUpdate
+    this.bindTouchEvent('.close-button', this.openModal, this.openKeyboardForUpdate);
+    
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
@@ -145,6 +160,29 @@ Module.register('MMM-TodoistTouch', {
     });
   },
 
+  openKeyboardForUpdate: function (e) {
+    this.pauseAutoTab();
+    const { taskContainer, tabId, taskId } = this.taskDetails(e);
+
+    // 1. Target the exact Nunjucks class that holds your task content text
+    const contentElement = taskContainer.querySelector('.task-confirm-content');
+    
+    // 2. Extract just that clean text string, stripping away any extra spaces
+    const existingText = contentElement ? contentElement.textContent.trim() : '';
+
+    // 3. Send the clean value to the touchscreen keyboard
+    this.sendNotification('KEYBOARD', {
+      key: 'TODOIST_UPDATE_TASK',
+      style: 'default',
+      sendLabel: 'Update',
+      value: existingText, 
+      data: { 
+        tabId: tabId,
+        taskId: taskId, 
+      },
+    });
+  },
+
   userSwapTab (e) {
     const tabId = e.currentTarget.getAttribute('data-tab-id');
 
@@ -180,7 +218,7 @@ Module.register('MMM-TodoistTouch', {
     return 'MMM-TodoistTouch.njk';
   },
 
-  addTaskLevels (tasks) {
+  /*  addTaskLevels (tasks) {
     // Normalize IDs to strings so 10 and "10" don't mismatch.
     const byId = new Map(tasks.map(task => [String(task.id), task]));
 
@@ -218,6 +256,54 @@ Module.register('MMM-TodoistTouch', {
 
     return tasks;
 
+  }, */
+
+  sortTasks (tasks) {
+    const map = new Map();
+    const roots = [];
+
+    // 1. Index all tasks by normalized string ID
+    for (const task of tasks) {
+      const id = String(task.id).trim();
+      map.set(id, { task, children: [] });
+    }
+
+    // 2. Attach subtasks to their parent task
+    for (const task of tasks) {
+      const id = String(task.id).trim();
+      const parentId = task.parentId ? String(task.parentId).trim() : null;
+      const node = map.get(id);
+
+      if (parentId && map.has(parentId)) {
+        map.get(parentId).children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    // 3. Traverse in hierarchy order and collect original task objects
+    const sorted = [];
+    function traverse (nodes, level = 0) {
+      nodes.sort((a, b) => {
+        const orderA = a.task.childOrder ?? a.task.order ?? 0;
+        const orderB = b.task.childOrder ?? b.task.order ?? 0;
+
+        return orderA - orderB;
+      });
+
+      for (const node of nodes) {
+        node.task.level = level; // Optional: attaches nesting level directly to each task
+        sorted.push(node.task);
+        if (node.children.length > 0) {
+          traverse(node.children, level + 1);
+        }
+      }
+    }
+
+    traverse(roots);
+
+    // 4. Overwrite the original `tasks` array 
+    tasks.splice(0, tasks.length, ...sorted);
   },
 
   getTemplateData () {
@@ -254,11 +340,10 @@ Module.register('MMM-TodoistTouch', {
     ) {
       return;
     }
-
+    //////////
     this.loading = false;
     this.data.tasks = payload.tasks;
-    this.data.tasks.forEach(task => this.addTaskLevels(task));
-
+    this.data.tasks.forEach(task => this.sortTasks(task));
     this.updateDom(300);
   },
 
@@ -275,16 +360,89 @@ Module.register('MMM-TodoistTouch', {
     };
   },
 
-  bindTouchEvent (className, callback) {
+  bindTouchEvent (className, shortPressCallback, longPressCallback) {
     const elements = document.querySelectorAll('.MMM-TodoistTouch ' + className);
     if (!elements || !elements.length) return;
 
-    callback = callback.bind(this);
+    shortPressCallback = shortPressCallback.bind(this);
+    if (longPressCallback) {
+      longPressCallback = longPressCallback.bind(this);
+    }
 
     elements.forEach((element) => {
-      element.addEventListener('touchend', callback);
-      element.addEventListener('click', callback);
+      let pressTimer = null;
+      let longPressTriggered = false;
+
+      element.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+            
+        longPressTriggered = false;
+
+        // 🌟 VISUAL FEEDBACK: Shrink and dim
+        this.addPressFeedback(element);
+
+        // Your optimized 600ms timer
+        pressTimer = setTimeout(() => {
+          longPressTriggered = true;
+                
+          // 🌟 FIX: Punch the button outward to 105% and brighten it up
+          element.style.transform = 'scale(1.05)';
+          element.style.opacity = '1';
+
+          // Give it 150ms to expand, then slide back to normal size
+          setTimeout(() => {
+            this.clearPressFeedback(element);
+          }, 150);
+
+          if (longPressCallback) {
+            longPressCallback({ currentTarget: element, target: element });
+          }
+        }, 600); 
+      });
+
+      element.addEventListener('pointerup', (e) => {
+        clearTimeout(pressTimer);
+
+        if (longPressTriggered) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          return;
+        }
+
+        // 🌟 VISUAL FEEDBACK: Clear feedback on a regular quick tap
+        this.clearPressFeedback(element);
+        shortPressCallback({ currentTarget: element, target: element });
+      });
+
+      // 🌟 VISUAL FEEDBACK: Safely reset if the user slides off the button
+      element.addEventListener('pointercancel', () => {
+        clearTimeout(pressTimer);
+        this.clearPressFeedback(element);
+      });
+      element.addEventListener('pointerleave', () => {
+        clearTimeout(pressTimer);
+        this.clearPressFeedback(element);
+      });
+
+      element.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
     });
+  },
+
+  addPressFeedback: function (element) {
+    if (!element) return;
+    element.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+    element.style.transform = 'scale(0.92)'; // Shrinks slightly into the glass
+    element.style.opacity = '0.6'; // Dims slightly to show it's active
+  },
+
+  clearPressFeedback: function (element) {
+    if (!element) return;
+    element.style.transform = 'none';
+    element.style.opacity = '1';
   },
 
   taskDetails (e) {
