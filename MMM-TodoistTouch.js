@@ -341,7 +341,7 @@ Module.register('MMM-TodoistTouch', {
     ) {
       return;
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////
     this.loading = false;
     this.data.tasks = payload.tasks;
     this.data.tasks.forEach(task => this.sortTasks(task));
@@ -379,18 +379,18 @@ bindTouchEvent (className, shortPressCallback, longPressCallback) {
             
             longPressTriggered = false;
 
-            // 🌟 VISUAL FEEDBACK: Shrink and dim the moment the finger hits the glass
+      // 🌟 VISUAL FEEDBACK: Shrink and dim the moment the finger hits the glass
             this.addPressFeedback(element);
 
             // Your optimized 600ms timer
             pressTimer = setTimeout(() => {
                 longPressTriggered = true;
                 
-                // 🌟 FIX: Punch the button outward to 105% and brighten it up instantly
+      // 🌟 FIX: Punch the button outward to 105% and brighten it up instantly
                 element.style.transform = "scale(1.05)";
                 element.style.opacity = "1";
 
-                // Give it 150ms to physically expand, then smoothly slide back to normal size
+                // Give it 150ms to expand, then slide back to normal size
                 setTimeout(() => {
                     this.clearPressFeedback(element);
                 }, 150);
@@ -415,7 +415,7 @@ bindTouchEvent (className, shortPressCallback, longPressCallback) {
             shortPressCallback({ currentTarget: element, target: element });
         });
 
-        // 🌟 VISUAL FEEDBACK: Safely reset if the user slides their finger off the button
+        // 🌟 VISUAL FEEDBACK: Safely reset if the user slides off the button
         element.addEventListener('pointercancel', () => {
             clearTimeout(pressTimer);
             this.clearPressFeedback(element);
