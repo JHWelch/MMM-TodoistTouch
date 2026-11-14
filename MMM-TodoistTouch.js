@@ -106,7 +106,7 @@ Module.register('MMM-TodoistTouch', {
   },
 
   // 2. Custom routine to handle touch selection on Nunjucks rendered elements
-    bindTouchEvents: function () {
+  bindTouchEvents: function () {
     // Short press -> openModal | Long press -> openKeyboardForUpdate
     this.bindTouchEvent('.close-button', this.openModal, this.openKeyboardForUpdate);
     
@@ -168,7 +168,7 @@ Module.register('MMM-TodoistTouch', {
     const contentElement = taskContainer.querySelector('.task-confirm-content');
     
     // 2. Extract just that clean text string, stripping away any extra spaces
-    const existingText = contentElement ? contentElement.textContent.trim() : "";
+    const existingText = contentElement ? contentElement.textContent.trim() : '';
 
     // 3. Send the clean value to the touchscreen keyboard
     this.sendNotification('KEYBOARD', {
@@ -178,7 +178,7 @@ Module.register('MMM-TodoistTouch', {
       value: existingText, 
       data: { 
         tabId: tabId,
-        taskId: taskId 
+        taskId: taskId, 
       },
     });
   },
@@ -218,9 +218,7 @@ Module.register('MMM-TodoistTouch', {
     return 'MMM-TodoistTouch.njk';
   },
 
-
-
-/*  addTaskLevels (tasks) {
+  /*  addTaskLevels (tasks) {
     // Normalize IDs to strings so 10 and "10" don't mismatch.
     const byId = new Map(tasks.map(task => [String(task.id), task]));
 
@@ -260,7 +258,7 @@ Module.register('MMM-TodoistTouch', {
 
   }, */
 
-  sortTasks(tasks) {
+  sortTasks (tasks) {
     const map = new Map();
     const roots = [];
 
@@ -285,10 +283,11 @@ Module.register('MMM-TodoistTouch', {
 
     // 3. Traverse in hierarchy order and collect original task objects
     const sorted = [];
-    function traverse(nodes, level = 0) {
+    function traverse (nodes, level = 0) {
       nodes.sort((a, b) => {
         const orderA = a.task.childOrder ?? a.task.order ?? 0;
         const orderB = b.task.childOrder ?? b.task.order ?? 0;
+
         return orderA - orderB;
       });
 
@@ -361,88 +360,89 @@ Module.register('MMM-TodoistTouch', {
     };
   },
 
-bindTouchEvent (className, shortPressCallback, longPressCallback) {
+  bindTouchEvent (className, shortPressCallback, longPressCallback) {
     const elements = document.querySelectorAll('.MMM-TodoistTouch ' + className);
     if (!elements || !elements.length) return;
 
     shortPressCallback = shortPressCallback.bind(this);
     if (longPressCallback) {
-        longPressCallback = longPressCallback.bind(this);
+      longPressCallback = longPressCallback.bind(this);
     }
 
     elements.forEach((element) => {
-        let pressTimer = null;
-        let longPressTriggered = false;
+      let pressTimer = null;
+      let longPressTriggered = false;
 
-        element.addEventListener('pointerdown', (e) => {
-            if (e.button !== 0) return;
+      element.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
             
-            longPressTriggered = false;
+        longPressTriggered = false;
 
-      // 🌟 VISUAL FEEDBACK: Shrink and dim
-            this.addPressFeedback(element);
+        // 🌟 VISUAL FEEDBACK: Shrink and dim
+        this.addPressFeedback(element);
 
-            // Your optimized 600ms timer
-            pressTimer = setTimeout(() => {
-                longPressTriggered = true;
+        // Your optimized 600ms timer
+        pressTimer = setTimeout(() => {
+          longPressTriggered = true;
                 
-      // 🌟 FIX: Punch the button outward to 105% and brighten it up
-                element.style.transform = "scale(1.05)";
-                element.style.opacity = "1";
+          // 🌟 FIX: Punch the button outward to 105% and brighten it up
+          element.style.transform = 'scale(1.05)';
+          element.style.opacity = '1';
 
-                // Give it 150ms to expand, then slide back to normal size
-                setTimeout(() => {
-                    this.clearPressFeedback(element);
-                }, 150);
-
-                if (longPressCallback) {
-                    longPressCallback({ currentTarget: element, target: element });
-                }
-            }, 600); 
-        });
-
-        element.addEventListener('pointerup', (e) => {
-            clearTimeout(pressTimer);
-
-            if (longPressTriggered) {
-                e.preventDefault();
-                e.stopPropagation();
-                return;
-            }
-
-            // 🌟 VISUAL FEEDBACK: Clear feedback on a regular quick tap
+          // Give it 150ms to expand, then slide back to normal size
+          setTimeout(() => {
             this.clearPressFeedback(element);
-            shortPressCallback({ currentTarget: element, target: element });
-        });
+          }, 150);
 
-        // 🌟 VISUAL FEEDBACK: Safely reset if the user slides off the button
-        element.addEventListener('pointercancel', () => {
-            clearTimeout(pressTimer);
-            this.clearPressFeedback(element);
-        });
-        element.addEventListener('pointerleave', () => {
-            clearTimeout(pressTimer);
-            this.clearPressFeedback(element);
-        });
+          if (longPressCallback) {
+            longPressCallback({ currentTarget: element, target: element });
+          }
+        }, 600); 
+      });
 
-        element.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
+      element.addEventListener('pointerup', (e) => {
+        clearTimeout(pressTimer);
+
+        if (longPressTriggered) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          return;
+        }
+
+        // 🌟 VISUAL FEEDBACK: Clear feedback on a regular quick tap
+        this.clearPressFeedback(element);
+        shortPressCallback({ currentTarget: element, target: element });
+      });
+
+      // 🌟 VISUAL FEEDBACK: Safely reset if the user slides off the button
+      element.addEventListener('pointercancel', () => {
+        clearTimeout(pressTimer);
+        this.clearPressFeedback(element);
+      });
+      element.addEventListener('pointerleave', () => {
+        clearTimeout(pressTimer);
+        this.clearPressFeedback(element);
+      });
+
+      element.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
     });
-},
+  },
 
   addPressFeedback: function (element) {
     if (!element) return;
-    element.style.transition = "transform 0.15s ease, opacity 0.15s ease";
-    element.style.transform = "scale(0.92)"; // Shrinks slightly into the glass
-    element.style.opacity = "0.6";           // Dims slightly to show it's active
+    element.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+    element.style.transform = 'scale(0.92)'; // Shrinks slightly into the glass
+    element.style.opacity = '0.6'; // Dims slightly to show it's active
   },
 
   clearPressFeedback: function (element) {
     if (!element) return;
-    element.style.transform = "none";
-    element.style.opacity = "1";
+    element.style.transform = 'none';
+    element.style.opacity = '1';
   },
 
   taskDetails (e) {
