@@ -856,17 +856,17 @@ describe('socketNotificationReceived', () => {
   });
 
   it('updates loading state and data on expected notification', () => {
-    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    const sortTasksSpy = jest.spyOn(MMMTodoistTouch, 'sortTasks');
 
     MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[0]);
   });
 
   it('can load data back from tabs', () => {
-    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    const sortTasksSpy = jest.spyOn(MMMTodoistTouch, 'sortTasks');
     payload.tasks = [
       [{ id: 1, content: 'Test task 1' }],
       [{ id: 2, content: 'Test task 2' }],
@@ -876,8 +876,8 @@ describe('socketNotificationReceived', () => {
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[1]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[1]);
   });
 });
 
