@@ -86,7 +86,7 @@ Module.register('MMM-TodoistTouch', {
         ...tabOverrides,
       });
       this.unpauseAutoTab();
-    } 
+    }
     // === NEW LOGIC FOR HANDLING UPDATES ===
     else if (notification == 'KEYBOARD_INPUT' && payload.key === 'TODOIST_UPDATE_TASK') {
       const { taskId } = payload.data; // Extract the specific task ID we passed to the keyboard
@@ -97,7 +97,7 @@ Module.register('MMM-TodoistTouch', {
         content: payload.message, // The new edited text you typed into the keyboard
       });
       this.unpauseAutoTab();
-    } 
+    }
     // ======================================
     else if (notification === 'KEYBOARD_CLOSED' && (payload.key === 'TODOIST_ADD_TASK' || payload.key === 'TODOIST_UPDATE_TASK')) {
       this.pauseAutoTab();
@@ -109,7 +109,7 @@ Module.register('MMM-TodoistTouch', {
   bindTouchEvents: function () {
     // Short press -> openModal | Long press -> openKeyboardForUpdate
     this.bindTouchEvent('.close-button', this.openModal, this.openKeyboardForUpdate);
-    
+
     this.bindTouchEvent('.modal-button-confirm', this.confirmCloseTask);
     this.bindTouchEvent('.modal-button-cancel', this.cancelCloseTask);
     this.bindTouchEvent('.add-button', this.openKeyboardForAdd);
@@ -166,7 +166,7 @@ Module.register('MMM-TodoistTouch', {
 
     // 1. Target the exact Nunjucks class that holds your task content text
     const contentElement = taskContainer.querySelector('.task-confirm-content');
-    
+
     // 2. Extract just that clean text string, stripping away any extra spaces
     const existingText = contentElement ? contentElement.textContent.trim() : '';
 
@@ -175,10 +175,10 @@ Module.register('MMM-TodoistTouch', {
       key: 'TODOIST_UPDATE_TASK',
       style: 'default',
       sendLabel: 'Update',
-      value: existingText, 
-      data: { 
+      value: existingText,
+      data: {
         tabId: tabId,
-        taskId: taskId, 
+        taskId: taskId,
       },
     });
   },
@@ -262,7 +262,7 @@ Module.register('MMM-TodoistTouch', {
 
     traverse(roots);
 
-    // 4. Overwrite the original `tasks` array 
+    // 4. Overwrite the original `tasks` array
     tasks.splice(0, tasks.length, ...sorted);
   },
 
@@ -335,7 +335,7 @@ Module.register('MMM-TodoistTouch', {
 
       element.addEventListener('pointerdown', (e) => {
         if (e.button !== 0) return;
-            
+
         longPressTriggered = false;
 
         // 🌟 VISUAL FEEDBACK: Shrink and dim
@@ -344,7 +344,7 @@ Module.register('MMM-TodoistTouch', {
         // Your optimized 600ms timer
         pressTimer = setTimeout(() => {
           longPressTriggered = true;
-                
+
           // 🌟 FIX: Punch the button outward to 105% and brighten it up
           element.style.transform = 'scale(1.05)';
           element.style.opacity = '1';
@@ -357,7 +357,7 @@ Module.register('MMM-TodoistTouch', {
           if (longPressCallback) {
             longPressCallback({ currentTarget: element, target: element });
           }
-        }, 600); 
+        }, 600);
       });
 
       element.addEventListener('pointerup', (e) => {
