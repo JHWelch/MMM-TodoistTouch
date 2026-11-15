@@ -218,46 +218,6 @@ Module.register('MMM-TodoistTouch', {
     return 'MMM-TodoistTouch.njk';
   },
 
-  /*  addTaskLevels (tasks) {
-    // Normalize IDs to strings so 10 and "10" don't mismatch.
-    const byId = new Map(tasks.map(task => [String(task.id), task]));
-
-    // This function exists only while addTaskLevels is running.
-    function getLevel (task, visiting = new Set()) {
-      if (task.parentId == null || task.parentId === '') {
-        return 0;
-      }
-
-      const id = String(task.id);
-      const parentId = String(task.parentId);
-      // Prevent infinite recursion when records form a loop.
-      if (visiting.has(id)) {
-        throw new Error(`Circular parent relationship involving task ${id}`);
-      }
-
-      const parent = byId.get(parentId);
-
-      // Choose a policy for an orphaned task.
-      if (!parent) {
-        console.warn(`Task ${id} has missing parent ${parentId}`);
-
-        return 7;
-      }
-      visiting.add(id);
-      const level = getLevel(parent, visiting) + 1;
-      visiting.delete(id);
-
-      return level;
-    }
-    // Mutates the existing task objects by adding task.level.
-    for (const task of tasks) {
-      task.level = getLevel(task);
-    }
-
-    return tasks;
-
-  }, */
-
   sortTasks (tasks) {
     const map = new Map();
     const roots = [];
