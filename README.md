@@ -86,22 +86,6 @@ Specify a number of different tabs, each with their own filter. Requires a touch
 | `filter`      | **Required** | Filter to apply to tasks. See [Todoist Filters](https://www.todoist.com/help/todoist/features/introduction-to-filters-V98wIH). |
 | `addTaskArgs` | *Optional*   | Override `addTaskArgs` for the tab. See `addTaskArgs` in the [main config](#customizing-config).                               |
 
-#### Functions
-**Add Task** feature:  
-Press the **+** sign under the task list to add a new task.  
-A keyboard will appear and allow you to enter a new task.    
-Press "Add Task" to add it, or "Cancel"
-
-**Complete Task** feature:  
-Press on a task description (or click).  
-A confirmation pop-up will appear.  
-Press "Confirm" or "Cancel"
-
-**Update Task** feature:  
-Long Press on a task description (or long click).  
-A keyboard will appear filled in with the current task description.  Make the necessary updates.  
-Press "Update" or "Cancel"
-
 #### Auto Tab mode
 
 When using tabs, you have the ability to automatically change tabs based on an interval. To set this you will use `autoTabMode` and `autoTabInterval`.
@@ -115,6 +99,26 @@ After `autoTabInterval` milliseconds without user interaction, changes tab to th
 ##### `'advance'` Auto Tab Mode
 
 After `autoTabInterval` milliseconds without user interaction, the active tab will advance to the next tab. So with three tabs, 0 -> 1 -> 2 -> 0 ->...
+
+### Interacting with Tasks
+
+#### Add Task
+
+Press the **+** sign under the task list to add a new task.  
+A keyboard will appear and allow you to enter a new task.    
+Press "Add Task" to add it, or "Cancel"
+
+#### Complete task
+
+Press on a task description (or click).  
+A confirmation pop-up will appear.  
+Press "Confirm" or "Cancel"
+
+#### Update Task
+
+Long Press on a task description (or long click).  
+A keyboard will appear filled in with the current task description.  Make the necessary updates.  
+Press "Update" or "Cancel"
 
 ## Update
 
