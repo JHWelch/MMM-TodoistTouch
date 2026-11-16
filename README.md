@@ -14,7 +14,8 @@ npm install --omit=dev
 
 ### Keyboard
 
-To use the "Add Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). Either this fork or the original @lavolp3 version will work.
+To use the "Add Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). Either this fork or the original @lavolp3 version will work.  
+To use the "Update Task" functionality, this module requires [MMM-Keyboard](https://github.com/jhwelch/MMM-Keyboard). The original @lavolp3 version will not work correctly because it will not fill in the keyboard with the current contents of the task description.
 
 ## Using the module
 
@@ -98,6 +99,26 @@ After `autoTabInterval` milliseconds without user interaction, changes tab to th
 ##### `'advance'` Auto Tab Mode
 
 After `autoTabInterval` milliseconds without user interaction, the active tab will advance to the next tab. So with three tabs, 0 -> 1 -> 2 -> 0 ->...
+
+### Interacting with Tasks
+
+#### Add Task
+
+Press the **+** sign under the task list to add a new task.  
+A keyboard will appear and allow you to enter a new task.    
+Press "Add Task" to add it, or "Cancel"
+
+#### Complete task
+
+Press on a task description (or click).  
+A confirmation pop-up will appear.  
+Press "Confirm" or "Cancel"
+
+#### Update Task
+
+Long Press on a task description (or long click).  
+A keyboard will appear filled in with the current task description.  Make the necessary updates.  
+Press "Update" or "Cancel"
 
 ## Update
 

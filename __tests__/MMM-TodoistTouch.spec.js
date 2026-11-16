@@ -462,55 +462,67 @@ describe('notificationReceived', () => {
 });
 
 describe('bindTouchEvents', () => {
+  let moduleElement;
+
   beforeEach(() => {
-    document.body.className = 'MMM-TodoistTouch'; // Needed for targeting
+    moduleElement = document.createElement('div');
+    moduleElement.className = 'MMM-TodoistTouch';
+    document.body.appendChild(moduleElement);
   });
 
-  it('binds touch events for close button', () => {
+  afterEach(() => {
+    moduleElement.remove();
+  });
+
+  it('binds pointer events for close button', () => {
     const mockCloseButton = document.createElement('button');
     mockCloseButton.className = 'close-button';
-    document.body.appendChild(mockCloseButton);
+    moduleElement.appendChild(mockCloseButton);
     MMMTodoistTouch.openModal = jest.fn();
 
     MMMTodoistTouch.bindTouchEvents();
 
-    mockCloseButton.dispatchEvent(new Event('touchend'));
+    mockCloseButton.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    mockCloseButton.dispatchEvent(new MouseEvent('pointerup', { button: 0 }));
     expect(MMMTodoistTouch.openModal).toHaveBeenCalled();
   });
 
-  it('binds touch events for modal confirm button', () => {
+  it('binds pointer events for modal confirm button', () => {
     const mockConfirmButton = document.createElement('button');
     mockConfirmButton.className = 'modal-button-confirm';
-    document.body.appendChild(mockConfirmButton);
+    moduleElement.appendChild(mockConfirmButton);
     MMMTodoistTouch.confirmCloseTask = jest.fn();
 
     MMMTodoistTouch.bindTouchEvents();
 
-    mockConfirmButton.dispatchEvent(new Event('click'));
+    mockConfirmButton.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    mockConfirmButton.dispatchEvent(new MouseEvent('pointerup', { button: 0 }));
     expect(MMMTodoistTouch.confirmCloseTask).toHaveBeenCalled();
   });
 
-  it('binds touch events for modal cancel button', () => {
+  it('binds pointer events for modal cancel button', () => {
     const mockCancelButton = document.createElement('button');
     mockCancelButton.className = 'modal-button-cancel';
-    document.body.appendChild(mockCancelButton);
+    moduleElement.appendChild(mockCancelButton);
     MMMTodoistTouch.cancelCloseTask = jest.fn();
 
     MMMTodoistTouch.bindTouchEvents();
 
-    mockCancelButton.dispatchEvent(new Event('touchend'));
+    mockCancelButton.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    mockCancelButton.dispatchEvent(new MouseEvent('pointerup', { button: 0 }));
     expect(MMMTodoistTouch.cancelCloseTask).toHaveBeenCalled();
   });
 
-  it('binds touch events for add button', () => {
+  it('binds pointer events for add button', () => {
     const mockAddButton = document.createElement('button');
     mockAddButton.className = 'add-button';
-    document.body.appendChild(mockAddButton);
+    moduleElement.appendChild(mockAddButton);
     MMMTodoistTouch.openKeyboardForAdd = jest.fn();
 
     MMMTodoistTouch.bindTouchEvents();
 
-    mockAddButton.dispatchEvent(new Event('click'));
+    mockAddButton.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    mockAddButton.dispatchEvent(new MouseEvent('pointerup', { button: 0 }));
     expect(MMMTodoistTouch.openKeyboardForAdd).toHaveBeenCalled();
   });
 });
@@ -654,12 +666,21 @@ describe('userSwapTab', () => {
 });
 
 describe('swapTab', () => {
+  let moduleElement;
   let tabButton;
 
   beforeEach(() => {
+    moduleElement = document.createElement('div');
+    moduleElement.className = 'MMM-TodoistTouch';
+    document.body.appendChild(moduleElement);
+
     tabButton = document.createElement('button');
     tabButton.className = 'tab-button';
     tabButton.setAttribute('data-tab-id', '1');
+  });
+
+  afterEach(() => {
+    moduleElement.remove();
   });
 
   it('activates selected tab list and deactivates others', () => {
@@ -670,8 +691,8 @@ describe('swapTab', () => {
     tab1.className = 'list';
     tab1.setAttribute('data-tab-id', '1');
 
-    document.body.appendChild(tab0);
-    document.body.appendChild(tab1);
+    moduleElement.appendChild(tab0);
+    moduleElement.appendChild(tab1);
 
     MMMTodoistTouch.swapTab('1');
 
@@ -684,8 +705,8 @@ describe('swapTab', () => {
     otherTabButton.className = 'tab-button active';
     otherTabButton.setAttribute('data-tab-id', '0');
 
-    document.body.appendChild(tabButton);
-    document.body.appendChild(otherTabButton);
+    moduleElement.appendChild(tabButton);
+    moduleElement.appendChild(otherTabButton);
 
     MMMTodoistTouch.swapTab('1');
 
@@ -856,17 +877,17 @@ describe('socketNotificationReceived', () => {
   });
 
   it('updates loading state and data on expected notification', () => {
-    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    const sortTasksSpy = jest.spyOn(MMMTodoistTouch, 'sortTasks');
 
     MMMTodoistTouch.socketNotificationReceived('MMM-TodoistTouch-DATA', payload);
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[0]);
   });
 
   it('can load data back from tabs', () => {
-    const addTaskLevelsSpy = jest.spyOn(MMMTodoistTouch, 'addTaskLevels');
+    const sortTasksSpy = jest.spyOn(MMMTodoistTouch, 'sortTasks');
     payload.tasks = [
       [{ id: 1, content: 'Test task 1' }],
       [{ id: 2, content: 'Test task 2' }],
@@ -876,26 +897,29 @@ describe('socketNotificationReceived', () => {
 
     expect(MMMTodoistTouch.loading).toBe(false);
     expect(MMMTodoistTouch.data.tasks).toEqual(payload.tasks);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[0]);
-    expect(addTaskLevelsSpy).toHaveBeenCalledWith(payload.tasks[1]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[0]);
+    expect(sortTasksSpy).toHaveBeenCalledWith(payload.tasks[1]);
   });
 });
 
 describe('bindTouchEvent', () => {
-  it('binds touchend and click events to elements with the given class', () => {
+  it('binds pointer events to elements with the given class', () => {
+    const moduleElement = document.createElement('div');
+    moduleElement.className = 'MMM-TodoistTouch';
     const mockElement = document.createElement('div');
     mockElement.className = 'test-class';
-    document.body.appendChild(mockElement);
+    moduleElement.appendChild(mockElement);
+    document.body.appendChild(moduleElement);
 
     const callback = jest.fn();
     MMMTodoistTouch.bindTouchEvent('.test-class', callback);
 
-    mockElement.dispatchEvent(new Event('touchend'));
-    mockElement.dispatchEvent(new Event('click'));
+    mockElement.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    mockElement.dispatchEvent(new MouseEvent('pointerup', { button: 0 }));
 
-    expect(callback).toHaveBeenCalledTimes(2);
+    expect(callback).toHaveBeenCalledTimes(1);
 
-    document.body.removeChild(mockElement);
+    document.body.removeChild(moduleElement);
   });
 });
 
