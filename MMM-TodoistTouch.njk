@@ -14,7 +14,13 @@
   {% for tasks in taskGroups %}
     {% if tasks | length == 0 %}
       <div class="dimmed light list{% if loop.index0 == activeTab %} active{% endif %}" data-tab-id="{{ loop.index0 }}">
-        {{ noTasksMessage | default("NO_TASKS") | translate | safe }}
+        <span>{{ noTasksMessage | default("NO_TASKS") | translate | safe }}</span>
+
+        {% if hasKeyboard %}
+          <button class="add-button">
+            <span class="fa fa-plus"></span>
+          </button>
+        {% endif %}
       </div>
     {% else %}
       <ul class="list{% if loop.index0 == activeTab %} active{% endif %}" data-tab-id="{{ loop.index0 }}">
