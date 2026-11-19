@@ -356,6 +356,8 @@ Module.register('MMM-TodoistTouch', {
 
           if (longPressCallback) {
             longPressCallback({ currentTarget: element, target: element });
+          } else {
+            shortPressCallback({ currentTarget: element, target: element });
           }
         }, 600);
       });
